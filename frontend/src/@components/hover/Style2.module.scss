@@ -1,0 +1,24 @@
+.container {
+  position: relative;
+  
+  .item {
+    &:hover + .message {
+      display: block;
+    }
+  }
+
+  .message {
+    display: none;
+    position: absolute;
+    top: 2.5rem;
+    left: 0;
+    background-color: var(--dark);
+    border: 1px solid var(--light);
+    padding: 0.5rem;
+    z-index: 1;
+    p {
+      display: block;
+      position: relative;
+    }
+  }
+}

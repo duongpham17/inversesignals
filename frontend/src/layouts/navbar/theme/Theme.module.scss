@@ -1,0 +1,30 @@
+/* Button wrapper */
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover{
+        .loader{
+            border-radius: 50px;
+        }
+    }
+}
+
+/* LOADER */
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 35px;
+  height: 32px;
+  background:
+    radial-gradient(circle 11px at top,#0000 100%,var(--primary)) 0 20px,
+    radial-gradient(circle 11px at top,#0000 100%,var(--primary-light)) 0 10px,
+    radial-gradient(circle 11px at top,#0000 100%,var(--dark-shade)) 0 0   ;
+  background-size: 20px 100%;
+  background-repeat: repeat-x;
+  animation: l7 2s infinite linear;
+  transition: ease-in-out 0.3s;
+}
+@keyframes l7 {
+  50%  {background-position: 10px 15px,-10px 12px,15px 8px}
+  100% {background-position: 20px 20px,-20px 10px,20px 0px}
+}

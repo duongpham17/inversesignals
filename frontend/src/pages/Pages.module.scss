@@ -1,0 +1,8 @@
+.container{
+    min-width: 320px;
+    min-height: 100vh;
+    padding: 3rem 1rem;
+    background-image: radial-gradient(circle at 1px 1px, var(--light) 1.5px, transparent 0);
+    background-size: 21px 21px;
+    width: 100%;
+}

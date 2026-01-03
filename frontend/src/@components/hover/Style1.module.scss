@@ -1,0 +1,27 @@
+.container {
+  position: relative;
+  
+  .item {
+    &:hover + .message {
+      display: block;
+    }
+  }
+
+  .message {
+    display: none;
+    position: absolute;
+    bottom: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--light);
+    padding: 0.2rem 0.4rem;
+    z-index: 5;
+    p {
+      display: block;
+      position: relative;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+}

@@ -1,0 +1,19 @@
+.container{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: var(--light);
+    border: 1px solid var(--light);
+    transition: ease-in-out 0.3s;
+    &:hover{
+        border-bottom: 1px solid var(--primary);
+    }
+    button, input{
+        padding: 0.5rem;
+        display: block;
+    }
+    input{
+        width: 100%;
+    }   
+
+}

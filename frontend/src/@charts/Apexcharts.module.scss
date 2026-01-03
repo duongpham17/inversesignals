@@ -1,0 +1,14 @@
+.container{
+    /* styles.module.css */
+    :global(.apexcharts-tooltip),
+    :global(.apexcharts-xaxistooltip),
+    :global(.apexcharts-yaxistooltip) {
+        padding: 0.5rem;
+        border: 0 !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+    }
+    p{
+        padding: 0.2rem 0;
+    }
+}

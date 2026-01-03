@@ -1,0 +1,27 @@
+.container{
+    padding: 0.5rem;
+
+    p{
+        margin-bottom: 0.2rem;
+    }
+
+    span{
+        margin-right: 0.5rem;
+    }
+
+    .high{
+        color: var(--green);
+    }
+    .low{
+        color: var(--red);
+    }
+    .ema9{
+        color: var(--blue);
+    }
+    .ema21{
+        color: var(--yellow);
+    }
+    .vwap{
+        color: #e684eaec;
+    }
+}

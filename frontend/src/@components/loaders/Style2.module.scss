@@ -1,0 +1,27 @@
+@keyframes spinner {
+    to{
+        transform: rotate(360deg);
+    }
+}
+
+.loading{
+    border-radius: 50%;
+    display: block;
+    animation: spinner 1s linear infinite;
+    border-color: var(--primary);
+    border-top-color: transparent;
+    border: 2px solid var(--primary);
+    border-top-color: transparent;
+}
+.primary{
+    border-color: var(--primary);
+    border-top-color: transparent;
+}
+.dark{
+    border-color: var(--dark);
+    border-top-color: transparent;
+}
+
+.center{
+    margin: auto;
+}

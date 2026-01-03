@@ -1,0 +1,42 @@
+.container{
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 0;
+    &:hover{
+        opacity: 0.8;
+    }
+    svg{
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+    }
+}
+
+.selected{
+    background-color: var(--primary) !important;
+}
+.default{
+    background-color: rgba(70, 70, 70, 0.5);
+}
+.white{
+    background-color: white;
+}
+.black{
+    background-color: black;
+}
+.dark{
+    background-color: var(--dark);
+}
+.light{
+    background-color: var(--light);
+}
+.red{
+    background-color: var(--red);
+}
+.green{
+    background-color: var(--green);
+}
+.primary{   
+    background-color: var(--primary);
+}

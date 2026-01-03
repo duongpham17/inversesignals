@@ -1,0 +1,33 @@
+.container{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    width: 100%;
+
+    button, a{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--dark);
+        border: 1px solid var(--dark-shade);
+        transition: ease-in-out 0.3s;
+        width: 35px;
+        height: 35px;
+        margin: 0 0.1rem;
+        &:hover{
+            background-color: var(--primary);
+            border-radius: 50px;
+        }
+        svg{
+            display: flex;
+            font-size: 1.2rem;
+        }
+        img{
+            width: 30px;
+            height: 30px;
+            mix-blend-mode: screen;
+        }
+    }
+}

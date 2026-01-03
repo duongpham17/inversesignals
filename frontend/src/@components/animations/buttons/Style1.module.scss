@@ -1,0 +1,21 @@
+.container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    width: 100%;
+    &:hover{
+        svg {
+            color: var(--primary);
+        }
+    }
+    svg{
+        transition: ease-in-out 0.3s;
+        font-size: 1.5rem;
+    }
+    .open{
+        transform: rotate(720deg);
+        transition: transform 2s ease; /* smooth rotation */
+        color: var(--primary);
+    }
+}

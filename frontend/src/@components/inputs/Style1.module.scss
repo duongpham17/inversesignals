@@ -1,0 +1,43 @@
+.container{
+    width: 100%;
+    margin: 0.5rem 0;
+
+    input{
+        height: 35px;
+        padding: 0.5rem;
+        width: 100%;
+        transition: 0.2s ease-in-out;
+        border: 1px solid var(--light);
+        background-color: var(--light);;
+        outline: none;
+        box-sizing: border-box;
+
+        &:hover{
+            border: 1px solid var(--primary);
+        }
+    }
+    input[type="color"] {
+        -webkit-appearance: none;
+        height: 35px;
+        cursor: pointer;
+        padding: 0.2rem;
+    };
+    
+    p{
+        width: 100%;
+        span, small{
+            color: var(--text-light)
+        }
+    }
+
+    .double{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .error{
+        border: 1px solid var(--red);
+    }
+
+}

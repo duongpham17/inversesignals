@@ -1,0 +1,25 @@
+.container{
+    width: 100%;
+    margin: 0.5rem 0;
+    p{
+        width: 100%;
+        color: var(--text-light)
+    }
+    .choice{
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    button{
+        padding: 0.5rem;
+        box-sizing: border-box;
+        background-color: var(--light);
+        width: 100%;
+        transition: 0.2s ease-in-out;
+        border: 1px solid var(--light);
+        &:hover{
+            border: 1px solid var(--primary);
+        }
+    }
+
+}

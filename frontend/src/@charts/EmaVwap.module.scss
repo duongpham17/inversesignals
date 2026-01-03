@@ -1,0 +1,39 @@
+.container {
+  *:focus {
+    outline: none;
+  }
+}
+
+.tooltip{
+    background-color: var(--dark-shade);
+    padding: 1rem;
+    p{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0.5rem 0;
+    }
+    .ema5{
+        span{
+            color: var(--green);
+        }
+    }
+    .ema20{
+        span{
+            color: var(--blue);
+        }
+    }
+    .ema50{
+        span{
+            color: var(--yellow);
+        }
+    }
+    .vwap{
+        span{
+            color: var(--primary-light);
+        }
+    }
+    .close {
+        color: var(--primary);
+    }
+}

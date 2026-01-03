@@ -1,0 +1,19 @@
+.container {
+  margin: 0.5rem auto;
+  padding: 0.5rem;
+  position: relative;
+  background-color: var(--dark-shade);
+  border: 1px solid var(--light);
+}
+
+.red{
+  border: 1px solid var(--red);
+}
+
+.green{
+  border: 1px solid var(--green);
+}
+
+.dark{
+  background-color: var(--dark);
+}

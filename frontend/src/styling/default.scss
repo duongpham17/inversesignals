@@ -1,0 +1,57 @@
+html, body {
+
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family:Arial, Helvetica, sans-serif;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+    }
+    
+  &::-webkit-scrollbar-track {
+    border-radius: 10px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgb(30, 30, 30); 
+    border-radius: 10px;
+  }
+}
+  
+body{
+  background: var(--background);
+}
+.bodyScrollBar{
+  overflow: hidden;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+  
+a, button, input, li, ul, p, q, textarea, div, em, i{
+  text-decoration: none;
+  outline: none;
+  border: none;
+  background: none;
+  list-style: none;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+img{
+  object-fit: cover;
+  display: block;
+}
+  
+button, a{
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+}
+
+svg{
+  font-size: 1rem;
+}

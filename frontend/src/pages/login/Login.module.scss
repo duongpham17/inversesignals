@@ -1,0 +1,28 @@
+.container{ 
+    margin: 1rem auto;
+    padding: 1rem;
+
+    .box{
+        max-width: 500px;
+        margin: 1rem auto;    
+        border-radius: 10px;
+        .header, .navbar{
+            padding: 1rem;
+        }
+        .header{
+            text-align: center;
+        }
+        .links{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            button{
+                padding: 0 0.5rem;
+                &:hover{
+                    opacity: 0.8;
+                }
+            }
+        }
+    }
+
+}

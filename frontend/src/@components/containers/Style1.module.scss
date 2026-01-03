@@ -1,0 +1,78 @@
+.container {
+  width: 100%;
+  position: relative;
+  padding: 0.5rem;
+  margin: 0.5rem auto;
+  border-bottom: 1px solid var(--light-shade);
+  background-color: var(--dark);
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      var(--light-shade) 0,
+      var(--light-shade) 1px,
+      transparent 1px,
+      transparent 5px,
+    ),
+    repeating-linear-gradient(
+      to right,
+      var(--light-shade) 0,
+      var(--light-shade) 1px,
+      transparent 1px,
+      transparent 5px,
+    );
+
+  &::before,
+  &::after,
+  & .cornerbl,
+  & .cornerbr {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--primary);
+  }
+
+  &::before { top: 0; left: 0; border-right: none; border-bottom: none; }
+  &::after { top: 0; right: 0; border-left: none; border-bottom: none; }
+  & .cornerbl { bottom: 0; left: 0; border-right: none; border-top: none; }
+  & .cornerbr { bottom: 0; right: 0; border-left: none; border-top: none; }
+}
+
+.red{
+  border: 1px solid var(--red);
+  &::before,
+  &::after,
+  & .cornerbl,
+  & .cornerbr {
+    border: 1px solid transparent;
+  }
+  .cornerbl, .cornerbr{
+    border: 1px solid transparent;
+  }
+}
+
+.green{
+  border: 1px solid var(--green);
+  &::before,
+  &::after,
+  & .cornerbl,
+  & .cornerbr {
+    border: 1px solid transparent;
+  }
+  .cornerbl, .cornerbr{
+    border: 1px solid transparent;
+  }
+}
+
+.dark{
+  border: 1px solid var(--dark-shade);
+  &::before,
+  &::after,
+  & .cornerbl,
+  & .cornerbr {
+    border: 1px solid transparent;
+  }
+  .cornerbl, .cornerbr{
+    border: 1px solid transparent;
+  }
+}
