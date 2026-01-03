@@ -6,7 +6,7 @@ export const website = {
 };
 
 export const base_url_api =  {
-    production: "https://inversesignals.onrender.com",
+    production: "https://inversesignals.onrender.com/api",
     development: "http://localhost:8000/api"
 };
 
