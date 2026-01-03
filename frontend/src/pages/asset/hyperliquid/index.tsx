@@ -1,10 +1,13 @@
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from '../UseContext';
 import { useHyperliquidKlines } from 'exchanges/hyperliquid';
 import { useAppSelector } from '@redux/hooks/useRedux';
 import { priceFormat } from '@utils/functions';
-
+import Flex from '@components/flex/Flex'
 import Loader from '@components/loaders/Style1';
+import Button from '@components/buttons/Style1';
+import Text from '@components/texts/Style1';
+import Container from '@components/containers/Style3';
 import EmaVwapChart from '@charts/EmaVwap';
 import Candlesticks from '@charts/Candlesticks';
 import Orderbook from './Orderbook';
@@ -16,6 +19,8 @@ const Hyperliquid = () => {
   const { timeseries, limits, symbol, setPrice, viewChart, openItem } = useContext(Context);
   
   const { open } = useAppSelector(state => state.trades);
+  
+  const [ options, setOptions ] = useState("orderbook");
 
   const candles = useHyperliquidKlines(symbol!, timeseries, limits);
 
@@ -45,15 +50,22 @@ const Hyperliquid = () => {
 
       {viewChart === "candle" && <Candlesticks data={candles} height={400} annotations={annotations} precision={priceFormat(candles[0][1]).precision} minMove={priceFormat(candles[0][1]).minMove}/>}
 
-      {viewChart === "line" && <EmaVwapChart data={candles} height={400} sync="crypto" />}
+      {viewChart === "line" && <EmaVwapChart data={candles} height={400} sync="crypto"/>}
 
-      {candles.length && <Trade candles={candles} />}
+      {candles.length && <Trade candles={candles}/>}
 
       {openItem !== "record" && 
       <>
-        <Orderbook  />
+        <Container>
+          <Flex>
+            <Button onClick={() => setOptions("orderbook")}><Text color={options==="orderbook" ? "primary" : "default"}>Orderbook</Text></Button>
+            <Button onClick={() => setOptions("indicators")}><Text color={options==="indicators" ? "primary" : "default"}>Indicators</Text></Button>
+          </Flex>
+        </Container>
 
-        <Indicators candles={candles} />
+        {options === "orderbook" && <Orderbook/>}
+
+        {options === "indicators" && <Indicators candles={candles}/>}
       </>
       }
 

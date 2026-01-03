@@ -7,6 +7,7 @@ import Button from '@components/buttons/Style1';
 import Line from '@components/line/Style1';
 import Options from '@components/options/Style1';
 import Hover from '@components/hover/Style1';
+import Text from '@components/texts/Style1';
 import { MdCandlestickChart, MdOutlineStackedLineChart } from "react-icons/md";
 import { RiFileHistoryLine } from "react-icons/ri";
 import Binance from './binance';
@@ -16,7 +17,7 @@ const Pages = () => {
 
     const {user} = useAppSelector(state => state.authentications);
 
-    const {page, timeseries_set, timeseries, setTimeseries, limits_set, limits, setLimits, viewChart, onViewChart, setOpenItem} = useContext(Context);
+    const {price, page, timeseries_set, timeseries, setTimeseries, limits_set, limits, setLimits, viewChart, onViewChart, setOpenItem} = useContext(Context);
 
     return (            
         <>
@@ -24,7 +25,9 @@ const Pages = () => {
         <Line color="primary"/>
 
         <Between>
-            <Flex><></></Flex>
+            <Flex>
+                <Text size={25} color="primary">{price}</Text>
+            </Flex>
             <Flex>
                 <Options color="dark" options={timeseries_set.map(el => String(el))} value={String(timeseries)} onClick={time => setTimeseries(time)} />
                 <Options color="dark" options={limits_set.map(el => String(el))} value={String(limits)} onClick={limit => setLimits(Number(limit))} />

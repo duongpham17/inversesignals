@@ -100,10 +100,10 @@ const SearchCrypto = ({assets}: {assets:IAssets[]}) => {
 
   return (
     <ContainerGrid>
-      <Search data={assets.map(el => el.name.toLowerCase()).slice(0, 10)}>
+      <Search data={assets.map(el => el.name.toLowerCase())}>
         {(results) => 
           <Wrap>
-            { results.map((el) => 
+            { results.slice(0, 10).map((el) => 
               <Link key={el} to={createLink(el)}><Button color="dark">{el}</Button></Link>
             )}
           </Wrap>

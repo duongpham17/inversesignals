@@ -2,8 +2,9 @@ import { useContext, useState, useEffect } from 'react';
 import { Context } from '../UseContext';
 import { useLocation } from 'react-router-dom';
 import { klines as BinanceKlines, TBinanceKlines } from 'exchanges/binance';
+import { priceFormat } from '@utils/functions';
 import EmaVwapChart from '@charts/EmaVwap';
-import CandlestickChartEma from '@charts/Apexcharts';
+import CandlestickChart from '@charts/Candlesticks';
 import Indicators from './Indicators';
 
 const Binance = () => {
@@ -43,9 +44,9 @@ const Binance = () => {
 
   return (
     <>
-      {viewChart === "candle" && <CandlestickChartEma data={klines} height={400} plain />}
+      {viewChart === "candle" && klines.length && <CandlestickChart data={klines} height={300} precision={priceFormat(klines[0][1]).precision} minMove={priceFormat(klines[0][1]).minMove} />}
 
-      {viewChart === "line" && <EmaVwapChart data={klines} height={400} sync="crypto" />}
+      {viewChart === "line" && <EmaVwapChart data={klines} height={300} sync="crypto" />}
 
       <Indicators klines={klines}/>
     </>

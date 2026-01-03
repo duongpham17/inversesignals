@@ -103,7 +103,7 @@ const Trade = ({candles}: ITradeProps) => {
             </Between>
             <Text>Cost: ${openTrade.size * openTrade.open_klines[1]}</Text>
             <Text>Margin: ${openTrade.size * openTrade.open_klines[1] / openTrade.leverage}</Text>
-            <Text size={30}>${calculate_trade_metrics(price, openTrade.open_klines[1], openTrade.side, openTrade.size, openTrade.leverage).pnl}</Text>
+            <Text size={30}>${calculate_trade_metrics(price, openTrade.open_klines[1], openTrade.side, openTrade.size, openTrade.leverage).pnl.toFixed(2)}</Text>
           </Form>
         </Cover>
       }

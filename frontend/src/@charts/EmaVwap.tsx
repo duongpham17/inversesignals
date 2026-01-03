@@ -61,7 +61,7 @@ const EmaChartComponent = ({ data, label="", sync, height=300}: Props) => {
     };
 
     return (
-        <div onClick={(e) => e.stopPropagation()} className={styles.container}>
+      <div onClick={(e) => e.stopPropagation()} className={styles.container}>
         <ResponsiveContainer width="100%" height={height}>
             <AreaChart data={EmaData()} syncId={sync}>
             <XAxis dataKey="date" tickFormatter={(time) => new Date(time).toDateString()} minTickGap={50} fontSize={12} padding={{right: 20}} />
@@ -74,7 +74,7 @@ const EmaChartComponent = ({ data, label="", sync, height=300}: Props) => {
             <Tooltip content={content => CustomToolTips({...content, label})}/>
             </AreaChart>
         </ResponsiveContainer>
-        </div>
+      </div>
     );
 }
 

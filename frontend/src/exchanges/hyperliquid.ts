@@ -145,7 +145,7 @@ export const useHyperliquidKlines = ( coin: string, interval: keyof typeof inter
 export type TOrderBookEntry = { price: number; size: number };
 export type TOrderBook = { buys: TOrderBookEntry[]; sells: TOrderBookEntry[] };
 
-export const useHyperliquidOrderBook = (coin: string, depth = 20) => {
+export const useHyperliquidOrderBook = (coin: string, depth = 50) => {
   const wsRef = useRef<WebSocket | null>(null);
   const [orderbook, setOrderbook] = useState<TOrderBook>({ buys: [], sells: [] });
 

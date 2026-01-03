@@ -1,0 +1,12 @@
+.container {
+  *:focus {
+    outline: none;
+  }
+
+  .sell{
+    color: var(--red)
+  }
+  .buy{
+    color: var(--green)
+  }
+}

@@ -96,6 +96,7 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const container = containerRef.current;
     const color = "transparent";
 
     chartRef.current = createChart(containerRef.current, {
@@ -112,8 +113,20 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
     ema21Ref.current = chartRef.current.addSeries(LineSeries, { color: '#ffff00', lineWidth: 2, priceLineVisible: false});
     ema9Red.current = chartRef.current.addSeries(LineSeries, { color: '#2474f5', lineWidth: 2, priceLineVisible: false });
     vwapRef.current = chartRef.current.addSeries(LineSeries, { color: '#e684eaec', lineWidth: 2, priceLineVisible: false });
+    
+    // Add right-click reset
+    const handleRightClick = (e: MouseEvent) => {
+      e.preventDefault();
+      chartRef.current?.timeScale().fitContent();
+      chartRef.current?.priceScale('right').applyOptions({ autoScale: true });
+    };
 
-    return () => chartRef.current?.remove();
+    container.addEventListener('contextmenu', handleRightClick);
+
+    return () => {
+      chartRef.current?.remove();
+      container.removeEventListener('contextmenu', handleRightClick); // ✅ use local variable
+    };
   }, [height, width, precision, minMove]);
 
   const addTradeLine = (series: any, price: number, label: string, color: string) => {
