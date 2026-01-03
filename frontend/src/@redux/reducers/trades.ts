@@ -2,6 +2,7 @@ import { ACTIONS, TYPES, INITIALSTATE} from '@redux/types/trades';
 
 const initialState: INITIALSTATE = {
     trades: null,
+    open: null,
 };
 
 export const Reducer = (state = initialState, action: ACTIONS) => {
@@ -12,11 +13,6 @@ export const Reducer = (state = initialState, action: ACTIONS) => {
                 ...state,
                 trades: payload
             };
-        case TYPES.TRADES_CREATE:
-            return{
-                ...state,
-                trades: state.trades ? [payload, ...state.trades] : [payload]
-            };
         case TYPES.TRADES_UPDATE:
             return{
                 ...state,
@@ -26,16 +22,22 @@ export const Reducer = (state = initialState, action: ACTIONS) => {
             return{
                 ...state,
                 trades: state.trades ? state.trades.filter(el => el._id !== payload) : null,
+                open: state.open ? state.open.filter(el => el._id !== payload) : null,
+            };
+        case TYPES.TRADES_CREATE:
+            return{
+                ...state,
+                open: state.open ? [payload, ...state.open] : [payload],
             };
         case TYPES.TRADES_OPEN:
             return{
                 ...state,
-                trades: payload
+                open: payload
             };
         case TYPES.TRADES_CLOSE:
             return{
                 ...state,
-                trades: state.trades ? state.trades.filter(el => el._id !== payload._id) : null,
+                open: state.trades ? state.trades.filter(el => el._id !== payload._id) : null,
             }
         default: 
             return state;

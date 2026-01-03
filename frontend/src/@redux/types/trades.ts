@@ -21,6 +21,7 @@ export interface ITrades {
 
 export interface INITIALSTATE {
     trades: ITrades[] | null,
+    open: ITrades[] | null,
 };
 
 /*ACTION**************************************************************************************************************/

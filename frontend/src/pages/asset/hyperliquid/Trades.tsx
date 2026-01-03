@@ -30,7 +30,7 @@ const Trade = ({candles, recordTrade, setRecordTrade}: ITradeProps) => {
 
   const dispatch = useAppDispatch();
 
-  const { trades } = useAppSelector(state => state.trades);
+  const { open } = useAppSelector(state => state.trades);
 
   const { symbol, timeseries } = useContext(Context);
 
@@ -75,14 +75,14 @@ const Trade = ({candles, recordTrade, setRecordTrade}: ITradeProps) => {
   };
 
   useEffect(() => {
-    if(!trades) dispatch(Trades.open(symbol!))
-  }, [trades, dispatch, symbol]);
+    dispatch(Trades.open(symbol!))
+  }, [dispatch, symbol]);
 
   return (
     <Fragment>
       <Between>
         <Wrap>
-          {trades?.map(el => {
+          {open?.map(el => {
             const metrics = calculate_trade_metrics(candles.slice(-1)[0][1], el.open_klines[1], el.side, el.size, el.leverage)
             return (
               <Button key={el._id} onClick={() => setOpenTrade(el)}>
