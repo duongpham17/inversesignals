@@ -6,7 +6,9 @@ exports.website = {
     name: "inverse signals",
     Name: "Inverse Signals"
 };
-exports.production_url = [];
+exports.production_url = [
+    "https://inversesignals.onrender.com"
+];
 exports.development_url = [
     'http://localhost:3000'
 ];

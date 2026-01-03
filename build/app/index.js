@@ -11,11 +11,9 @@ const frontend_1 = __importDefault(require("./frontend"));
 const routes_1 = __importDefault(require("./routes"));
 const database_1 = __importDefault(require("./database"));
 const bot_1 = __importDefault(require("../bot"));
-//import webhooks from '../stripe/webhooks';
 const app = (0, express_1.default)();
 exports.default = () => {
     (0, security_1.default)(app);
-    //webhooks(app);
     (0, parser_1.default)(app);
     (0, bot_1.default)();
     (0, routes_1.default)(app);

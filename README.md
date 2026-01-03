@@ -1,3 +1,2 @@
-# Autolcicker Api / Server
-
-https://www.theautoclicker.com# inversesignals
+# Inverse Signals
+https://inversesignals.onrender.com

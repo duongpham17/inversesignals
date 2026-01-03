@@ -6,11 +6,11 @@ export const website = {
 };
 
 export const base_url_api =  {
-    production: "",
+    production: "https://inversesignals.onrender.com",
     development: "http://localhost:8000/api"
 };
 
 export const base_url_frontend = {
-    production: "",
+    production: "https://inversesignals.onrender.com",
     development: "http://localhost:3000"
 };

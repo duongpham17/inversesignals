@@ -6,7 +6,7 @@ export const website = {
 };
 
 export const production_url: string[] = [
-
+  "https://inversesignals.onrender.com"
 ];
 
 export const development_url: string[] = [
