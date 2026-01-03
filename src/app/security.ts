@@ -45,8 +45,7 @@ const helmetContents = () => {
         directives: {
         defaultSrc: ["'self'", 'file:'],
         scriptSrc: ["'self'", "'unsafe-inline'", 'file:'],
-        connectSrc: ["'self'"],
-        frameSrc: ["'self'"], // <-- allow Stripe frames
+        connectSrc: ["'self'", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz"],
         },
     });
 };
