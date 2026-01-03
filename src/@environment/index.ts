@@ -21,9 +21,3 @@ export const mongodb = {
   database: process.env.DATABASE as string,
   password: process.env.DATABASE_PASSWORD as string
 }
-
-export const stripe_key = {
-  key : environment === "production" ? process.env.STRIPE_PROD_SECRET_KEY as string : process.env.STRIPE_TEST_SECRET_KEY as string,
-  webhook_paymentIntent: environment === "production" ? process.env.STRIPE_PROD_WEBHOOK_SECRET as string : process.env.STRIPE_TEST_WEBHOOK_SECRET as string,
-};
-
