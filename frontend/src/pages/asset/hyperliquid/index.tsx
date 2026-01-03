@@ -1,8 +1,10 @@
-import { useContext, useEffect, useState, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { Context } from '../UseContext';
 import { useHyperliquidKlines } from 'exchanges/hyperliquid';
 import { useAppSelector } from '@redux/hooks/useRedux';
+import { priceFormat } from '@utils/functions';
 
+import Loader from '@components/loaders/Style1';
 import EmaVwapChart from '@charts/EmaVwap';
 import Candlesticks from '@charts/Candlesticks';
 import Orderbook from './Orderbook';
@@ -11,13 +13,11 @@ import Indicators from './Indicators';
 
 const Hyperliquid = () => {
 
-  const { timeseries, limits, symbol, setPrice, viewChart } = useContext(Context);
+  const { timeseries, limits, symbol, setPrice, viewChart, openItem } = useContext(Context);
   
-  const { trades } = useAppSelector(state => state.trades);
+  const { open } = useAppSelector(state => state.trades);
 
   const candles = useHyperliquidKlines(symbol!, timeseries, limits);
-
-  const [recordTrade, setRecordTrade] = useState(false);
 
   useEffect(() => {
     if (!candles || candles.length === 0) return;
@@ -29,25 +29,27 @@ const Hyperliquid = () => {
   }, [candles, setPrice]);
 
   const annotations = useMemo(() => {
-    if(!trades) return [];
-    return trades?.map(el => ({
+    if(!open) return [];
+    return open?.map(el => ({
       open: el.open_klines[1],
       size: el.size,
       side: el.side,
       leverage: el.leverage
     }))
-  }, [trades]);
+  }, [open]);
+
+  if(!candles.length) return <Loader />
 
   return (
     <>
 
-      {candles.length && <Trade candles={candles} recordTrade={recordTrade} setRecordTrade={setRecordTrade} />}
+      {viewChart === "candle" && <Candlesticks data={candles} height={400} annotations={annotations} precision={priceFormat(candles[0][1]).precision} minMove={priceFormat(candles[0][1]).minMove}/>}
 
-      {viewChart === "candle" && <Candlesticks data={candles} height={400} annotations={annotations} />}
+      {viewChart === "line" && <EmaVwapChart data={candles} height={400} sync="crypto" />}
 
-      {viewChart === "ema" && <EmaVwapChart data={candles} height={400} sync="crypto" />}
+      {candles.length && <Trade candles={candles} />}
 
-      {!recordTrade && 
+      {openItem !== "record" && 
       <>
         <Orderbook  />
 

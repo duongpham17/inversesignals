@@ -16,8 +16,6 @@
         padding: 0.5rem;
         width: 100%;
         transition: 0.2s ease-in-out;
-        border: 1px solid var(--light);
-        background-color: var(--light);;
         outline: none;
         cursor: pointer;
         box-sizing: border-box;
@@ -25,6 +23,15 @@
         &:hover{
             border: 1px solid var(--primary);
         }
+    }
+
+    .default{
+        border: 1px solid var(--light);
+        background-color: var(--light);;
+    }
+    .dark{
+        border: 1px solid var(--dark);
+        background-color: var(--dark-shade);;
     }
     
 }

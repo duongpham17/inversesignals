@@ -47,7 +47,7 @@ const helmetContents = () => {
         directives: {
             defaultSrc: ["'self'", 'file:'],
             scriptSrc: ["'self'", "'unsafe-inline'", 'file:'],
-            connectSrc: ["'self'", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz"],
+            connectSrc: ["'self'", "https://api.hyperliquid.xyz", "wss://api.hyperliquid.xyz", "https://api.binance.com"],
         },
     });
 };

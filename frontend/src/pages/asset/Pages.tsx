@@ -1,18 +1,22 @@
 import { useContext } from 'react';
 import { Context } from './UseContext';
+import { useAppSelector } from '@redux/hooks/useRedux';
 import Between from '@components/flex/Between';
 import Flex from '@components/flex/Flex';
-import Text from '@components/texts/Style1';
 import Button from '@components/buttons/Style1';
 import Line from '@components/line/Style1';
 import Options from '@components/options/Style1';
-
+import Hover from '@components/hover/Style1';
+import { MdCandlestickChart, MdOutlineStackedLineChart } from "react-icons/md";
+import { RiFileHistoryLine } from "react-icons/ri";
 import Binance from './binance';
 import Hyperliquid from './hyperliquid';
 
 const Pages = () => {
 
-    const {page, timeseries_set, timeseries, setTimeseries, limits_set, limits, setLimits, price, viewChart, onViewChart} = useContext(Context);
+    const {user} = useAppSelector(state => state.authentications);
+
+    const {page, timeseries_set, timeseries, setTimeseries, limits_set, limits, setLimits, viewChart, onViewChart, setOpenItem} = useContext(Context);
 
     return (            
         <>
@@ -20,19 +24,14 @@ const Pages = () => {
         <Line color="primary"/>
 
         <Between>
+            <Flex><></></Flex>
             <Flex>
-                <Text color="primary" size={30}>{price}</Text> 
-            </Flex>
-            <Flex>
-                {timeseries_set.map(el =>
-                    <Button key={el} color={timeseries === el ? "primary" : "dark"} onClick={() => setTimeseries(el)}>{el}</Button>
-                )}
-                <Button color="dark" onClick={onViewChart}>{viewChart}</Button>
-                <Options options={limits_set.map(el => String(el))} value={String(limits)} onClick={v => setLimits(Number(v))} />
+                <Options color="dark" options={timeseries_set.map(el => String(el))} value={String(timeseries)} onClick={time => setTimeseries(time)} />
+                <Options color="dark" options={limits_set.map(el => String(el))} value={String(limits)} onClick={limit => setLimits(Number(limit))} />
+                <Button color="dark" onClick={onViewChart}>{viewChart === "candle" ? <MdCandlestickChart/> : <MdOutlineStackedLineChart/>}</Button>
+                {user && <Hover message="Trade"><Button color="dark" onClick={() => setOpenItem("record")}><RiFileHistoryLine/></Button></Hover>}
             </Flex>
         </Between>
-
-        <Line color="primary"/>
 
         {page === 1 && <Hyperliquid /> }
 

@@ -12,9 +12,9 @@ const Controller = () => {
     const {onPage, page, timeseries, setTimeseries, onCreateIndices, loading, setAssetClass, assetClass} = useContext(Context);
 
     const pages = {
-        setting_0: [5],
+        setting_0: [6],
         setting_1: [1,2,3],
-        setting_2: [2,3,4,5],
+        setting_2: [2,3,4,5,6],
     };
 
     return (

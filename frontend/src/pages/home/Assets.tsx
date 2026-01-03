@@ -26,7 +26,7 @@ const latest_volume = (asset: IAssets) => {
   return asset.dataset_1d.slice(-1)[0][2] * latest_price(asset);
 };
 
-const styles = { width1: "150px", width2: "120px" };
+const styles = { width1: "130px", width2: "110px" };
 
 const Crypto = ({assets}: {assets: IAssets[]}) => {
 
@@ -37,11 +37,8 @@ const Crypto = ({assets}: {assets: IAssets[]}) => {
     <ContainerGrid>   
       <Between>
         <Text style={{width: styles.width1}}>NAME</Text>
-        <Text style={{width: styles.width2}}>ROI</Text>
         <Text style={{width: styles.width2}}>PRICE</Text>
-        <Text style={{width: styles.width2}}>MCAP</Text>
-        <Text style={{width: styles.width2}}>VOLUME</Text>
-        <Text style={{width: styles.width2}}>SUPPLY</Text>
+        <Text style={{width: styles.width2}}>ROI</Text>
       </Between>
     </ContainerGrid>
       {mcap.map((el, index) => {
@@ -51,11 +48,8 @@ const Crypto = ({assets}: {assets: IAssets[]}) => {
             <Link to={`/asset?id=${el.name}&symbol=${el.ticker}`}>
               <Between key={el._id}>
                 <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
-                <Hover message="ROI"><Text color={roi>0?"green":"red"} style={{width: styles.width2}}>{roi.toFixed(2)} %</Text></Hover>
-                <Hover message="Price"><Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text></Hover>
-                <Hover message="Market Capital"><Text style={{width: styles.width2}}>$ {formatNumbersToString(latest_price(el) * el.supply)}</Text></Hover>
-                <Hover message="Volume"><Text style={{width: styles.width2}}>$ {formatNumbersToString(latest_volume(el))}</Text></Hover>
-                <Hover message="Circulating Supply"><Text style={{width: styles.width2}}>{formatNumbersToString(el.supply)}</Text></Hover>
+                <Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text>
+                <Text color={roi>0?"green":"red"} style={{width: styles.width2}}>{roi.toFixed(2)} %</Text>
               </Between>
             </Link>
           </ContainerGrid>

@@ -8,7 +8,7 @@ export const Styling= {
     blue:   {name: "blue",   background: "#171717",   },
     grey:   {name: "grey",   background: "#1e1e1e",   },
     green:  {name: "green",  background: "#121111",   },
-    pink:   {name: "pink",   background: "#141414ff", },
+    pink:   {name: "pink",   background: "#0b0b0b",   },
     orange: {name: "orange", background: "#181818ff", },
     red:    {name: "red",    background: "#000000",   },
 };

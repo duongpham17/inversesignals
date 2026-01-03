@@ -1,4 +1,4 @@
-import react, { Fragment, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Context } from '../UseContext';
 import { composite_volatility, escalation, percentage_from_high, vwap, calculate_trade_metrics } from '@utils/forumlas';
 import { THyperliquidKlines } from 'exchanges/hyperliquid';
@@ -8,7 +8,7 @@ import { ITrades } from '@redux/types/trades';
 import Trades from '@redux/actions/trades';
 import useForm from '@hooks/useForm';
 
-import Container from '@components/containers/Style1';
+import Container from '@components/containers/Style3';
 import Cover from '@components/covers/Style2';
 import Between from '@components/flex/Between';
 import Flex from '@components/flex/Flex';
@@ -19,20 +19,19 @@ import TextPlain from '@components/texts/Style1';
 import Form from '@components/forms/Style1';
 import Input from '@components/inputs/Style1';
 import Options from '@components/options/Style1';
+import { RiDeleteBin4Line } from "react-icons/ri";
 
 interface ITradeProps {
-  candles: THyperliquidKlines, 
-  recordTrade: boolean, 
-  setRecordTrade: react.Dispatch<react.SetStateAction<boolean>>
+  candles: THyperliquidKlines,
 }
 
-const Trade = ({candles, recordTrade, setRecordTrade}: ITradeProps) => {
+const Trade = ({candles}: ITradeProps) => {
 
   const dispatch = useAppDispatch();
 
   const { open } = useAppSelector(state => state.trades);
 
-  const { symbol, timeseries } = useContext(Context);
+  const { symbol, timeseries, openItem, setOpenItem, price } = useContext(Context);
 
   const [ openTrade, setOpenTrade ] = useState<ITrades | null>(null);
 
@@ -59,7 +58,7 @@ const Trade = ({candles, recordTrade, setRecordTrade}: ITradeProps) => {
     const open_klines = typeof values.open_klines === "string" ? customKlines.split(",").map((el:string) => Number(el)) as number[] : values.open_klines;
     values.open_klines = open_klines;
     await dispatch(Trades.create(values));
-    setRecordTrade(false);
+    setOpenItem("");
   };
 
   const close = async () => {
@@ -79,36 +78,37 @@ const Trade = ({candles, recordTrade, setRecordTrade}: ITradeProps) => {
   }, [dispatch, symbol]);
 
   return (
-    <Fragment>
-      <Between>
-        <Wrap>
-          {open?.map(el => {
-            const metrics = calculate_trade_metrics(candles.slice(-1)[0][1], el.open_klines[1], el.side, el.size, el.leverage)
-            return (
-              <Button key={el._id} onClick={() => setOpenTrade(el)}>
-                <TextPlain color={metrics.roi > 0 ? "green" : "red"}>{el.side.charAt(0).toUpperCase()} {formatNumbersToString(el.size)} @ {el.open_klines[1]} ${metrics.pnl.toFixed(2)}</TextPlain>
-              </Button>
-            )
-          })}
-        </Wrap>
-        <Button color="primary" onClick={() => setRecordTrade(!recordTrade)}>Record</Button>
-      </Between>
+    <Container>
 
+      <Wrap>
+        {open?.map(el => {
+          const metrics = calculate_trade_metrics(price, el.open_klines[1], el.side, el.size, el.leverage)
+          return (
+            <Button key={el._id} onClick={() => setOpenTrade(el)}>
+              <TextPlain color={metrics.roi > 0 ? "green" : "red"}>{el.side.charAt(0).toUpperCase()} {formatNumbersToString(el.size)} @ {el.open_klines[1]} ${metrics.pnl.toFixed(2)}</TextPlain>
+            </Button>
+          )
+        })}
+      </Wrap>
+    
       {openTrade  &&
         <Cover open={openTrade ? true : false} onClose={() => setOpenTrade(null)}>
           <Form>
             <Between>
-              <Text size={20}>${calculate_trade_metrics(candles.slice(-1)[0][1], openTrade.open_klines[1], openTrade.side, openTrade.size, openTrade.leverage).pnl}</Text>
-              <Button color="dark" onClick={remove}>Delete</Button>
+              <Text size={20}>{openTrade.ticker} ( {openTrade.size} ) {openTrade.side.toUpperCase()} {openTrade.leverage}x</Text>
+              <Flex>
+                <Button onClick={close} color="primary">Close</Button>
+                <Button color="dark" onClick={remove}><RiDeleteBin4Line/></Button>
+              </Flex>
             </Between>
-            <Text>{openTrade.side.toUpperCase()}, {openTrade.leverage}x, {openTrade.size} {openTrade.ticker} </Text>
-            <Text>{candles.slice(-1)[0].toString()}</Text>
-            <Button onClick={close} color="primary">Close Trade</Button>
+            <Text>Cost: ${openTrade.size * openTrade.open_klines[1]}</Text>
+            <Text>Margin: ${openTrade.size * openTrade.open_klines[1] / openTrade.leverage}</Text>
+            <Text size={30}>${calculate_trade_metrics(price, openTrade.open_klines[1], openTrade.side, openTrade.size, openTrade.leverage).pnl}</Text>
           </Form>
         </Cover>
       }
 
-      <Cover open={recordTrade} onClose={() => setRecordTrade(false)}>
+      <Cover open={openItem==="record"?true:false} onClose={() => setOpenItem("")}>
         <Form onSubmit={onSubmit} width={600}>
 
           <Container>
@@ -141,7 +141,7 @@ const Trade = ({candles, recordTrade, setRecordTrade}: ITradeProps) => {
 
         </Form>
       </Cover>
-    </Fragment>
+    </Container>
   )
 };
 

@@ -14,11 +14,7 @@ const intervalToMs: Record<string, number> = {
   "1w": 7 * 24 * 60 * 60_000
 };
 
-export function useHyperliquidKlines(
-  coin: string,
-  interval: keyof typeof intervalToMs = "1m", // interval string
-  limit = 100
-) {
+export const useHyperliquidKlines = ( coin: string, interval: keyof typeof intervalToMs = "1m", limit = 100) => {
   const wsRef = useRef<WebSocket | null>(null);
   const klinesRef = useRef<THyperliquidKlines>([]);
   const [klines, setKlines] = useState<THyperliquidKlines>([]);
@@ -27,9 +23,12 @@ export function useHyperliquidKlines(
     if (!coin) return;
 
     const intervalMs = intervalToMs[interval];
-    let reconnectTimer: number;
+    let reconnectTimer: number | undefined;
+    let isMounted = true;
 
+    // -------------------------
     // Fetch historical candles
+    // -------------------------
     const fetchHistoricalKlines = async () => {
       try {
         const now = Date.now();
@@ -40,58 +39,67 @@ export function useHyperliquidKlines(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             type: "candleSnapshot",
-            req: { coin, interval, startTime, endTime: now }
-          })
+            req: { coin, interval, startTime, endTime: now },
+          }),
         });
 
         if (!res.ok) {
-          const text = await res.text();
-          console.error("Failed to fetch historical candles:", text);
-          return [];
+          console.error("Failed to fetch historical candles:", await res.text());
+          return;
         }
 
         const data = await res.json();
 
         const historical: THyperliquidKlines = data.map((c: any) => [
-          Number(c.t), // time
-          Number(c.c), // close
-          Math.round(c.v), // volume
-          Number(c.o), // open
-          Number(c.h), // high
-          Number(c.l), // low
+          Number(c.t),
+          Number(c.c),
+          Math.round(c.v),
+          Number(c.o),
+          Number(c.h),
+          Number(c.l),
         ]);
 
         klinesRef.current = historical;
         setKlines(historical);
-        return historical;
       } catch (err) {
         console.error("Failed to fetch historical klines", err);
-        return [];
       }
     };
 
-    // Connect to live trades WS
+    // -------------------------
+    // WebSocket connection
+    // -------------------------
     const connectWS = () => {
+      if (!isMounted || wsRef.current) return;
+
       const ws = new WebSocket("wss://api.hyperliquid.xyz/ws");
       wsRef.current = ws;
 
       ws.onopen = () => {
-        ws.send(JSON.stringify({
-          method: "subscribe",
-          subscription: { type: "trades", coin }
-        }));
+        ws.send(
+          JSON.stringify({
+            method: "subscribe",
+            subscription: { type: "trades", coin },
+          })
+        );
       };
 
       ws.onmessage = (e) => {
+        if (!isMounted) return;
+
         const msg = JSON.parse(e.data);
         if (msg.channel !== "trades") return;
 
         for (const t of msg.data) {
           const price = Number(t.px);
           const size = Number(t.sz);
-          const time = Math.floor(Number(t.time) / intervalMs) * intervalMs;
+          const time =
+            Math.floor(Number(t.time) / intervalMs) * intervalMs;
 
-          let lastCandle = klinesRef.current[klinesRef.current.length - 1];
+          if (!Number.isFinite(price) || !Number.isFinite(size)) continue;
+
+          let lastCandle =
+            klinesRef.current[klinesRef.current.length - 1];
 
           if (!lastCandle || lastCandle[0] < time) {
             lastCandle = [time, price, size, price, price, price];
@@ -107,81 +115,112 @@ export function useHyperliquidKlines(
         setKlines([...klinesRef.current].slice(-limit));
       };
 
-      ws.onclose = () => {
-        reconnectTimer = window.setTimeout(connectWS, 1000);
+      ws.onerror = (err) => {
+        console.error("Hyperliquid WS error:", err);
       };
 
-      ws.onerror = () => ws.close();
+      ws.onclose = () => {
+        wsRef.current = null;
+        if (isMounted) {
+          reconnectTimer = window.setTimeout(connectWS, 1000);
+        }
+      };
     };
 
+    // Init
     fetchHistoricalKlines().then(connectWS);
 
+    // Cleanup
     return () => {
-      clearTimeout(reconnectTimer);
+      isMounted = false;
+      if (reconnectTimer) clearTimeout(reconnectTimer);
       wsRef.current?.close();
+      wsRef.current = null;
     };
   }, [coin, interval, limit]);
 
   return klines;
 };
 
-export type OrderBookEntry = { price: number; size: number };
-export type OrderBook = {
-  buys: OrderBookEntry[];
-  sells: OrderBookEntry[];
-};
+export type TOrderBookEntry = { price: number; size: number };
+export type TOrderBook = { buys: TOrderBookEntry[]; sells: TOrderBookEntry[] };
 
 export const useHyperliquidOrderBook = (coin: string, depth = 20) => {
   const wsRef = useRef<WebSocket | null>(null);
-  const [orderbook, setOrderbook] = useState<OrderBook>({ buys: [], sells: [] });
+  const [orderbook, setOrderbook] = useState<TOrderBook>({ buys: [], sells: [] });
 
   useEffect(() => {
     if (!coin) return;
 
-    const ws = new WebSocket("wss://api.hyperliquid.xyz/ws");
-    wsRef.current = ws;
+    // Prevent duplicate WS
+    if (wsRef.current) return;
+
+    let isMounted = true;
+
+    let ws: WebSocket | null = null;
+
+    try {
+      ws = new WebSocket("wss://api.hyperliquid.xyz/ws");
+      wsRef.current = ws;
+    } catch (err) {
+      console.warn("Failed to create WebSocket:", err);
+      return;
+    }
 
     ws.onopen = () => {
-      ws.send(JSON.stringify({
-        method: "subscribe",
-        subscription: { type: "l2Book", coin }
-      }));
+      if (!isMounted || !ws) return; // ✅ check ws is not null
+      try {
+        ws.send(JSON.stringify({
+          method: "subscribe",
+          subscription: { type: "l2Book", coin }
+        }));
+      } catch {
+        // ignore send errors
+      }
     };
 
     ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
-
-        if (msg.channel === "l2Book" && msg.data && Array.isArray(msg.data.levels)) {
+        if (msg.channel === "l2Book" && msg.data?.levels) {
           const [bidLevels, askLevels] = msg.data.levels as any[][];
+          const mapLevel = (lvl: any) => ({ price: Number(lvl.px), size: Number(lvl.sz) });
 
-          const mapLevel = (lvl: any): OrderBookEntry => ({
-            price: Number(lvl.px),
-            size: Number(lvl.sz)
-          });
-
-          const buys: OrderBookEntry[] = (bidLevels || [])
+          const buys = (bidLevels || [])
             .map(mapLevel)
-            .sort((a: OrderBookEntry, b: OrderBookEntry) => b.price - a.price) // highest bid first
+            .sort((a, b) => b.price - a.price)
             .slice(0, depth);
 
-          const sells: OrderBookEntry[] = (askLevels || [])
+          const sells = (askLevels || [])
             .map(mapLevel)
-            .sort((a: OrderBookEntry, b: OrderBookEntry) => a.price - b.price) // lowest ask first
+            .sort((a, b) => a.price - b.price)
             .slice(0, depth);
 
           setOrderbook({ buys, sells });
         }
-      } catch (err) {
-        console.error("Error parsing Hyperliquid orderbook WS message:", err);
+      } catch {
+        // ignore parse errors
       }
     };
 
-    ws.onerror = (err) => console.error("WebSocket error:", err);
-    ws.onclose = () => console.warn("Hyperliquid WS closed");
+    ws.onerror = () => {
+      // just warn instead of error
+      console.warn("Hyperliquid WS failed to connect");
+    };
 
-    return () => ws.close();
+    ws.onclose = () => {
+      console.warn("Hyperliquid WS closed");
+      wsRef.current = null;
+    };
+
+    return () => {
+      isMounted = false;
+      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+        ws.close();
+      }
+      wsRef.current = null;
+    };
   }, [coin, depth]);
 
   return orderbook;
-}
+};

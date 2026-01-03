@@ -69,7 +69,7 @@ const Edit = ({data, setEdit}: Props) => {
                 </Between>
             </Container>
 
-            {edited && <Button color="primary" type="submit" loading={loading}>Create</Button>}
+            {edited && <Button color="primary" type="submit" loading={loading}>Update</Button>}
 
             <Button color="dark" warning loading={loading} onClick={onDelete}>Delete</Button>
 

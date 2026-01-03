@@ -17,11 +17,11 @@ const Header = () => {
     <Between>
       <Flex>
         <Link to="/"><Button color="primary"><MdOutlineKeyboardBackspace/></Button></Link>
-        <Text size={20}>{id?.toUpperCase()} [ {symbol} ]</Text>
+        <Text>{id?.toUpperCase()} [ {symbol} ]</Text>
       </Flex>
       <Flex>
-        {page === 1 && <Text size={20}>HYPERLIQUID</Text>}
-        {page === 2 && <Text size={20}>BINANACE</Text>}
+        {page === 1 && <Text>HYPERLIQUID</Text>}
+        {page === 2 && <Text>BINANACE</Text>}
         <Icon onClick={() => setPage(-1)}><MdOutlineKeyboardArrowLeft/></Icon>
         <Icon onClick={() => setPage(1)}><MdOutlineKeyboardArrowRight/></Icon>
       </Flex>

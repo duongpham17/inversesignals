@@ -1,5 +1,6 @@
 import styles from './Candlesticks.module.scss';
 import React, { useEffect, useRef, useState } from 'react';
+import useWindowSize from '@hooks/useWindow';
 import { createChart, IChartApi, CandlestickData, CandlestickSeries, LineSeries } from 'lightweight-charts';
 import { formatDate, formatNumbersToString} from '@utils/functions';
 import { calculate_trade_metrics } from '@utils/forumlas';
@@ -19,6 +20,8 @@ interface Props {
   data: number[][]; // [[time(ms), close, volume, open, high, low], ...]
   height?: number;
   annotations?: Annotation[];
+  precision?: number,
+  minMove?: number
 }
 
 const calculateEMA = ( candles: CandlestickWithVolume[], period: number) => {
@@ -58,8 +61,8 @@ export const calculateVWAP = (candles: CandlestickWithVolume[]) => {
   return vwapSeries;
 };
 
-
-const Candlestick: React.FC<Props> = ({ data, height = 300, annotations = [] }) => {
+const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precision=2, minMove=0.01 }) => {
+  const {width} = useWindowSize()
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleRef = useRef<any>(null);
@@ -93,31 +96,27 @@ const Candlestick: React.FC<Props> = ({ data, height = 300, annotations = [] }) 
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const color = "transparent";
+
     chartRef.current = createChart(containerRef.current, {
-      width: containerRef.current.clientWidth,
+      width: width >= 1200 ? 1200 : width - 40,
       height,
-      layout: {
-        background: { color: 'transparent' },
-        textColor: '#d1d4dc',
-      },
-      grid: {
-        vertLines: { color: 'transparent' },
-        horzLines: { color: 'transparent' },
-      },
-      rightPriceScale: { borderColor: '#2b2b2b' },
-      timeScale: { borderColor: '#2b2b2b', timeVisible: true },
+      layout: { background: { color }, textColor: '#d1d4dc'},
+      grid: { vertLines: { color }, horzLines: { color }},
+      rightPriceScale: { borderColor: color },
+      timeScale: {borderColor: color}
     });
 
     // add series
-    candleRef.current = chartRef.current.addSeries(CandlestickSeries);
+    candleRef.current = chartRef.current.addSeries(CandlestickSeries, {priceFormat: {precision, minMove}});
     ema21Ref.current = chartRef.current.addSeries(LineSeries, { color: '#ffff00', lineWidth: 2, priceLineVisible: false});
     ema9Red.current = chartRef.current.addSeries(LineSeries, { color: '#2474f5', lineWidth: 2, priceLineVisible: false });
     vwapRef.current = chartRef.current.addSeries(LineSeries, { color: '#e684eaec', lineWidth: 2, priceLineVisible: false });
 
     return () => chartRef.current?.remove();
-  }, [height]);
+  }, [height, width, precision, minMove]);
 
-  const addTradeLine = (series: any, price: number, side: string, label: string, color: string) => {
+  const addTradeLine = (series: any, price: number, label: string, color: string) => {
     const line = {
       price,
       color,
@@ -146,11 +145,11 @@ const Candlestick: React.FC<Props> = ({ data, height = 300, annotations = [] }) 
     tradeLinesRef.current = [];
 
     // Add new trade lines from annotations
-    annotations.forEach((trade, index) => {
+    annotations.forEach((trade) => {
       const pnl = Number(calculate_trade_metrics(latestPrice, trade.open, trade.side, trade.size, trade.leverage).pnl.toFixed(2));
       const label = `${trade.side.charAt(0).toUpperCase()} ${formatNumbersToString(trade.size)} @ ${trade.open} ${pnl}`;
       const color = pnl > 0 ? '#54d26f' : '#e16363';
-      const line = addTradeLine(candleRef.current, trade.open, trade.side, label, color);
+      const line = addTradeLine(candleRef.current, trade.open, label, color);
       tradeLinesRef.current.push(line);
     });
   }, [candles, annotations]);
@@ -204,19 +203,17 @@ const Candlestick: React.FC<Props> = ({ data, height = 300, annotations = [] }) 
   return (
     <div className={styles.container}>
       <div>
-        <p>{formatDate(tooltip.time * 1000)}</p>
         <p>
-          <span>C:{tooltip.close}</span> 
-          <span className={styles.high}>H:{tooltip.high}</span> 
-          <span className={styles.low}>L:{tooltip.low}</span>
-        </p>
-        <p>
-          <span className={styles.ema9}>EMA9:{tooltip.ema9Red?.toFixed(4)}</span> 
-          <span className={styles.ema21}>EMA21:{tooltip.ema21Ref?.toFixed(4)}</span> 
-          <span className={styles.vwap}>VWAP:{tooltip.vwap?.toFixed(4)}</span>
-        </p>
+        <span className={styles.date}>{formatDate(tooltip.time * 1000)}</span>
+        <span className={styles.close}>C:{tooltip.close}</span> 
+        <span className={styles.high}>H:{tooltip.high}</span> 
+        <span className={styles.low}>L:{tooltip.low}</span>
+        <span className={styles.ema9}>EMA9:{tooltip.ema9Red?.toFixed(4)}</span> 
+        <span className={styles.ema21}>EMA21:{tooltip.ema21Ref?.toFixed(4)}</span> 
+        <span className={styles.vwap}>VWAP:{tooltip.vwap?.toFixed(4)}</span>
+      </p>
       </div>
-      <div ref={containerRef} style={{ width: '100%', height }} />
+      <div ref={containerRef} style={{ width, height }} />
     </div>
   );
 };

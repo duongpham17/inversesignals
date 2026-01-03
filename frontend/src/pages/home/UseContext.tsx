@@ -25,9 +25,9 @@ export const Context = createContext<PropsTypes>({
     loading: false,
     page: 1,
     onPage: (side) => {},
-    timeseries: "4h",
+    timeseries: "1h",
     setTimeseries: () => "",
-    datasetTimeseries: () => "dataset_4h",
+    datasetTimeseries: () => "dataset_1h",
     onCreateIndices: async () => {},
     onUpdateIndices: async (data: IIndices) => {},
     onDeleteIndices: async (id: string) => {},
@@ -64,7 +64,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
     }, [dispatch, page, indices])
 
     const onPage = (side: -1 | 1) => {
-        const maxPage = 5;
+        const maxPage = 6;
         const next = page + side;
         if (next < 1 || next > maxPage) return;
 
@@ -79,7 +79,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
 
     const timeseries = useMemo(() => {
         const param = new URLSearchParams(location.search).get("timeseries");
-        return param || "4h";
+        return param || "1h";
     }, [location.search]);
 
     const setTimeseries = (t: string) => {
@@ -93,7 +93,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
         if(timeseries === "4h") return "dataset_4h";
         if(timeseries === "1d") return "dataset_1d";
         if(timeseries === "1w") return "dataset_1w";
-        return "dataset_4h";
+        return "dataset_1h";
     };
 
     const onCreateIndices = async () => {

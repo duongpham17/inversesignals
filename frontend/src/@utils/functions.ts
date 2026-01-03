@@ -35,3 +35,10 @@ export const formatDate = (n: number): string => {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${dateString} ${hours}:${minutes}`
 };
+
+export const priceFormat = (price: number) => {
+  if (price < 1) return { precision: 4, minMove: 0.0001 };
+  if (price < 100) return { precision: 3, minMove: 0.001 };
+  if (price >= 10000)  return { precision: 2, minMove: 0.01 };
+  return { precision: 2, minMove: 0.01 };
+};

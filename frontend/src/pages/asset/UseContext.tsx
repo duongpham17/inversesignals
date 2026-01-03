@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState } from 'react';
+import React, { createContext, useMemo, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export interface PropsTypes {
@@ -16,6 +16,8 @@ export interface PropsTypes {
     setPrice: React.Dispatch<React.SetStateAction<number>>
     viewChart: string,
     onViewChart: () => void,
+    openItem: string,
+    setOpenItem: React.Dispatch<React.SetStateAction<string>>
 };
 
 // for consuming in children components, initial return state
@@ -34,6 +36,8 @@ export const Context = createContext<PropsTypes>({
     setPrice: () => "",
     viewChart: "candle",
     onViewChart: () => "",
+    openItem: "",
+    setOpenItem: () => "",
 });
 
 const UseContextAsset = ({children}: {children: React.ReactNode}) => {
@@ -42,8 +46,9 @@ const UseContextAsset = ({children}: {children: React.ReactNode}) => {
     const [ id, symbol ] = [new URLSearchParams(location.search).get("id"), new URLSearchParams(location.search).get('symbol')];
     const [ price, setPrice ] = useState<number>(0);
     const [ viewChart, setViewChart ] = useState<string>("candle");
+    const [ openItem, setOpenItem ] = useState<string>("");
 
-    const timeseries_set = ["1m", "5m", "15m", "30m", "1h", "4h"];
+    const timeseries_set = ["1m", "5m", "15m", "30m", "1h", "4h", "1d", "1w"];
 
     const timeseries = useMemo(() => {
         const param = new URLSearchParams(location.search).get("timeseries");
@@ -88,7 +93,11 @@ const UseContextAsset = ({children}: {children: React.ReactNode}) => {
         });
     };
 
-    const chartViews = ["candle", "ema"];
+    useEffect(() => {
+        document.title = `${symbol} ${price.toString()}`;
+    }, [price, symbol])
+
+    const chartViews = ["candle", "line"];
     const onViewChart = () => {
         const nextIndex = (chartViews.indexOf(viewChart) + 1) % chartViews.length;
         setViewChart(chartViews[nextIndex]);
@@ -100,7 +109,8 @@ const UseContextAsset = ({children}: {children: React.ReactNode}) => {
         timeseries_set, timeseries, setTimeseries,
         limits_set, limits, setLimits, 
         page, setPage,
-        viewChart, onViewChart
+        viewChart, onViewChart,
+        openItem, setOpenItem
     };
 
     return (
