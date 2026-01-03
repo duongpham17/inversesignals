@@ -40,14 +40,13 @@ const sanitizeInputMiddleware = (req: Request, res: Response, next: NextFunction
  * Customizes the Content-Security-Policy to allow Electron's file:// origin and inline scripts.
  */
 const helmetContents = () => {
-    const stripe = ["https://js.stripe.com", "https://api.stripe.com"];
     return helmet.contentSecurityPolicy({
         useDefaults: true,
         directives: {
         defaultSrc: ["'self'", 'file:'],
-        scriptSrc: ["'self'", "'unsafe-inline'", 'file:', stripe[0]],
-        connectSrc: ["'self'", stripe[1]],
-        frameSrc: ["'self'", stripe[0]], // <-- allow Stripe frames
+        scriptSrc: ["'self'", "'unsafe-inline'", 'file:'],
+        connectSrc: ["'self'"],
+        frameSrc: ["'self'"], // <-- allow Stripe frames
         },
     });
 };
