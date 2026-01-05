@@ -1,4 +1,4 @@
-import { composite_volatility, escalation, percentage_from_high } from '@utils/forumlas';
+import { composite_volatility, escalation, percentage_from_high, volume, rsi } from '@utils/forumlas';
 import { THyperliquidKlines } from 'exchanges/hyperliquid';
 import AreaChart from '@charts/Area';
 import Text from '@components/texts/Style2';
@@ -17,6 +17,16 @@ const Charts = ({candles}: Props) => {
   
   return (
     <>
+
+    <Container>
+      <Text color="light">Volume</Text>
+      <AreaChart data={volume(candles)} xkey='date' ykey='volume' height={style.height} sync="crypto" />
+    </Container>
+
+    <Container>
+      <Text color="light">Rsi</Text>
+      <AreaChart data={rsi(candles)} xkey='date' ykey='rsi' height={style.height} sync="crypto" />
+    </Container>
 
     <Container>
       <Text color="light">Composite Volatility</Text>

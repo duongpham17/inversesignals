@@ -14,6 +14,9 @@ export interface ITrades {
     x_composite_volatility: number,
     x_escalation: number,
     x_vwap: number,
+    x_avg_volume: number,
+    x_limits: number,
+    x_rsi: number,
     createdAt: number;
 };
 

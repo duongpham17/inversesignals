@@ -42,3 +42,12 @@ export const priceFormat = (price: number) => {
   if (price >= 10000)  return { precision: 2, minMove: 0.01 };
   return { precision: 2, minMove: 0.01 };
 };
+
+export const dateDifference = ( oldDate: number,closeDate: number): { hours: number; minutes: number, string: string } => {
+  const diffInMs = Math.abs(closeDate - oldDate);
+  const totalMinutes = Math.floor(diffInMs / (1000 * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const string = `${hours}H:${minutes}M`
+  return { hours, minutes, string };
+};

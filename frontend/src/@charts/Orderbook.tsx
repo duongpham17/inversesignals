@@ -44,7 +44,7 @@ const OrderbookBars = ({ buys, sells, height = 300, price }: Props) => {
       <ResponsiveContainer width="100%" height={height}>
         <BarChart data={data} layout="vertical" margin={{ top: 0, right: 70, bottom: 0, left: 5 }}>
           {/* Size axis */}
-          <XAxis type="number" domain={[0, "dataMax"]} hide />
+          <XAxis type="number" dataKey={"size"} domain={[0, "dataMax"]} fontSize={14} />
 
            {/* Current price line */}
           <ReferenceLine y={price} stroke="var(--primary)" strokeWidth={1} ifOverflow="extendDomain"

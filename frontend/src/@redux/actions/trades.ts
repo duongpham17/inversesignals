@@ -52,9 +52,9 @@ const remove = (id: ITrades["_id"]) => async (dispatch: Dispatch<ACTIONS>) => {
     }
 };
 
-const open = (id: ITrades["ticker"]) => async (dispatch: Dispatch<ACTIONS>) => {
+const open = () => async (dispatch: Dispatch<ACTIONS>) => {
     try{
-        const res = await api.get(`${endpoint}/${id}`);
+        const res = await api.get(`${endpoint}/open`);
         dispatch({
             type: TYPES.TRADES_OPEN,
             payload: res.data.data as ITrades[]

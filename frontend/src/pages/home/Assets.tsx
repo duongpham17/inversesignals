@@ -38,6 +38,7 @@ const Crypto = ({assets}: {assets: IAssets[]}) => {
       <Between>
         <Text style={{width: styles.width1}}>NAME</Text>
         <Text style={{width: styles.width2}}>PRICE</Text>
+        <Text style={{width: styles.width2}}>MCAP</Text>
         <Text style={{width: styles.width2}}>ROI</Text>
       </Between>
     </ContainerGrid>
@@ -45,10 +46,11 @@ const Crypto = ({assets}: {assets: IAssets[]}) => {
         const roi = percentage_change(latest_price(el), open_price(el))
         return (
           <ContainerGrid key={el._id}>
-            <Link to={`/asset?id=${el.name}&symbol=${el.ticker}`}>
+            <Link to={`/asset?symbol=${el.ticker}`}>
               <Between key={el._id}>
                 <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
                 <Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text>
+                <Text style={{width: styles.width2}}>$ {formatNumbersToString((latest_price(el) * el.supply))}</Text>
                 <Text color={roi>0?"green":"red"} style={{width: styles.width2}}>{roi.toFixed(2)} %</Text>
               </Between>
             </Link>

@@ -1,12 +1,14 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
+import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@redux/hooks/useRedux';
 import { calculate_trade_metrics } from '@utils/forumlas';
-import { formatNumbersToString } from '@utils/functions';
+import { formatNumbersToString, formatDate, dateDifference} from '@utils/functions';
 import { ITrades } from '@redux/types/trades';
 import Trades from '@redux/actions/trades';
 import useForm from '@hooks/useForm';
 import Text from '@components/texts/Style2';
-import Between from '@components/flex/Between'
+import Between from '@components/flex/Between';
+import Flex from '@components/flex/Flex';
 import Container from '@components/containers/Style1';
 import Cover from '@components/covers/Style2';
 import Form from '@components/forms/Style1';
@@ -14,6 +16,7 @@ import Input from '@components/inputs/Style1';
 import Options from '@components/options/Style1';
 import Button from '@components/buttons/Style1';
 import Line from '@components/line/Style1';
+import Hover from '@components/hover/Style1';
 
 interface Props {
     data: ITrades,
@@ -37,7 +40,7 @@ const Edit = ({data, setEdit}: Props) => {
   const onDelete = () => {
     dispatch(Trades.remove(data._id));
     setEdit(null);
-  }
+  };
 
   return (
     <Cover open={data?true:false} onClose={() => setEdit(null)}>
@@ -62,6 +65,14 @@ const Edit = ({data, setEdit}: Props) => {
             <Container>
                 <Between>
                     <Input type="number" label1="Streaks" name="x_streaks" value={values.x_streaks || ""} onChange={onChange} />
+                    <Input type="number" label1="Limits" name="x_limits" value={values.x_limits || ""} onChange={onChange} />
+                    <Input type="number" label1="Avg Volume" name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} />
+                    <Input type="number" label1="Rsi" name="x_rsi" value={values.x_rsi} onChange={onChange} />
+                </Between>
+            </Container>
+
+            <Container>
+                <Between>
                     <Input type="number" label1="Escalation" name="x_escalation" value={values.x_escalation} onChange={onChange} />
                     <Input type="number" label1="Pchigh" name="x_pchigh" value={values.x_pchigh} onChange={onChange} />
                     <Input type="number" label1="Composite V" name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
@@ -81,13 +92,31 @@ const Edit = ({data, setEdit}: Props) => {
 const History = () => {
 
     const {trades} = useAppSelector(state => state.trades);
+    
+    const [edit, setEdit] = useState<ITrades | null>(null);
 
-    const [edit, setEdit] = useState<ITrades | null>(null)
+    const stats = useMemo(() => {
+        if(!trades) return {total: 0, volume: 0};
+        let [total, volume] = [0, 0];
+        for(const x of trades){
+            if(x.close_klines.length === 0) continue;
+            const pnl = calculate_trade_metrics(x.close_klines[1], x.open_klines[1], x.side, x.size, x.leverage).pnl;
+            total+=pnl
+            volume+=(x.close_klines[1] * x.size);
+        };
+        return {total, volume}
+    }, [trades]);
 
     return (
         <>  
 
-            <Text size={20}>Trade History [ {trades?.length} ]</Text>
+            <Between>
+                <Text size={20}>Trade History [ {trades?.length} ]</Text>
+                <Flex>
+                    <Hover message="Volume"><Text size={20}>${stats.volume.toFixed(2)}</Text></Hover>
+                    <Hover message="Total PNL"><Text size={20} color={stats.total > 0 ?"green" : "red"}>${stats.total.toFixed(2)}</Text></Hover>
+                </Flex>
+            </Between>
 
             <Line color="primary" />
 
@@ -96,13 +125,26 @@ const History = () => {
                 return (
                     <Container key={el._id} onClick={() => setEdit(el)} color={el.close_klines.length === 0 ? "red" : "primary"}>
                         <Between>
-                            <Text>{el.ticker} {el.size} {el.side.toUpperCase()} {el.leverage}x = ${formatNumbersToString(el.size * el.open_klines[1])}</Text>
-                            <Text size={20} color={pnl > 0 ? "green" : "red"}>${formatNumbersToString(pnl - el.fees)}</Text>
+                            <Text color="light">{formatDate(el.open_klines[0])}</Text>
+                            {!!el.close_klines.length && <Text color="light">{formatDate(el.close_klines[0])}</Text>}
+                            {el.close_klines.length 
+                                ? <Text color="light">{dateDifference(el.open_klines[0], el.close_klines[0]).string}</Text>
+                                : <Text color="light">{dateDifference(el.open_klines[0], Date.now()).string}</Text>
+                            }
                         </Between>
                         <Between>
-                            {el.close_klines.length === 0 ? <Text color="red">Currently Trading</Text> : <Text>[ O: {el.open_klines[1]}, C:{el.close_klines[1]} ]</Text>}
-                            <Text color="red">-${el.fees}</Text>
+                            <Link to={`/asset?symbol=${el.ticker}`}><Text>{el.ticker} {el.side.toUpperCase()} {el.leverage}x</Text></Link>
+                            <Flex>
+                                <Hover message="fees"><Text color="red">( -${el.fees} )</Text></Hover>
+                                <Text size={18} color={pnl > 0 ? "green" : "red"}>${formatNumbersToString(pnl - el.fees)}</Text>
+                            </Flex>
                         </Between>
+                        {el.close_klines.length !== 0 &&
+                            <Between>
+                                <Text>{formatNumbersToString(el.size)} = ${formatNumbersToString(el.size * el.open_klines[1])}</Text>
+                                <Hover message="Open, Close"><Text> {el.open_klines[1]} | {el.close_klines[1]}</Text></Hover>
+                            </Between>
+                        }
                     </Container>
                 )
             })}

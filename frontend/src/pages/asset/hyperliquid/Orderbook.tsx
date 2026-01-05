@@ -13,7 +13,7 @@ const Orderbook = () => {
   const { buys, sells } = useHyperliquidOrderBook(symbol!);
   const [ total, setTotal ] = useState(0);
   const prevDepth = useRef({ buys: 0, sells: 0 });
-
+  
   useEffect(() => {
     const buyDepth = buys.reduce((a, b) => a + b.size, 0);
     const sellDepth = sells.reduce((a, b) => a + b.size, 0);

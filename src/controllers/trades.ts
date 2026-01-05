@@ -59,7 +59,7 @@ export const remove = asyncBlock(async(req: AuthenticatedRequest, res: Response,
 
 export const open = asyncBlock(async(req: AuthenticatedRequest, res: Response, next: NextFunction) => {
 
-    const data = await Trades.find({user_id: req.user._id, close_klines: { $size: 0 }, ticker: req.params.id}).sort({createdAt: -1}).lean();
+    const data = await Trades.find({user_id: req.user._id, close_klines: { $size: 0 }}).sort({createdAt: -1}).lean();
 
     if(!data) return next(new appError("Could not find trades data", 400));
 

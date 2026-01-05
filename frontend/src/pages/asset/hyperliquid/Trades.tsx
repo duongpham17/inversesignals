@@ -1,6 +1,7 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useMemo } from 'react';
 import { Context } from '../UseContext';
-import { composite_volatility, escalation, percentage_from_high, vwap, calculate_trade_metrics } from '@utils/forumlas';
+import { Link } from 'react-router-dom';
+import { composite_volatility, escalation, percentage_from_high, vwap, calculate_trade_metrics, calculate_volume, rsi } from '@utils/forumlas';
 import { THyperliquidKlines } from 'exchanges/hyperliquid';
 import { formatNumbersToString } from '@utils/functions';
 import { useAppDispatch, useAppSelector } from '@redux/hooks/useRedux';
@@ -31,7 +32,7 @@ const Trade = ({candles}: ITradeProps) => {
 
   const { open } = useAppSelector(state => state.trades);
 
-  const { symbol, timeseries, openItem, setOpenItem, price } = useContext(Context);
+  const { symbol, limits, timeseries, openItem, setOpenItem, price } = useContext(Context);
 
   const [ openTrade, setOpenTrade ] = useState<ITrades | null>(null);
 
@@ -44,11 +45,14 @@ const Trade = ({candles}: ITradeProps) => {
     fees: 0,
     open_klines: candles.slice(-1)[0],
     close_klines: [],
+    x_avg_volume: Math.round(calculate_volume(candles)/limits),
+    x_limits: limits,
     x_streaks: 0,
-    x_escalation: Number(escalation(candles).slice(-1)[0].escalation.toFixed(2)),
-    x_pchigh: Number(percentage_from_high(candles).slice(-1)[0].pchigh.toFixed(2)),
-    x_vwap: Number(vwap(candles).slice(-1)[0].vwap.toFixed(2)),
-    x_composite_volatility: Number(composite_volatility(candles).slice(-1)[0].volatility.toFixed(2)),
+    x_escalation: Number(escalation(candles).slice(-1)[0].escalation),
+    x_pchigh: Math.round(percentage_from_high(candles).slice(-1)[0].pchigh),
+    x_vwap: Number(vwap(candles).slice(-1)[0].vwap),
+    x_composite_volatility: Math.round(composite_volatility(candles).slice(-1)[0].volatility),
+    x_rsi: Math.round(rsi(candles).slice(-1)[0].rsi)
   };
 
   const { values, onChange, onSubmit, onSetValue } = useForm(initialState, callback, "");
@@ -74,22 +78,46 @@ const Trade = ({candles}: ITradeProps) => {
   };
 
   useEffect(() => {
-    dispatch(Trades.open(symbol!))
+    dispatch(Trades.open())
   }, [dispatch, symbol]);
 
-  return (
-    <Container>
+  const current_trades = useMemo(() => {
+    if(!open) return [];
+    return open.filter(el => el.ticker === symbol)
+  }, [open, symbol]);
 
-      <Wrap>
-        {open?.map(el => {
-          const metrics = calculate_trade_metrics(price, el.open_klines[1], el.side, el.size, el.leverage)
-          return (
-            <Button key={el._id} onClick={() => setOpenTrade(el)}>
-              <TextPlain color={metrics.roi > 0 ? "green" : "red"}>{el.side.charAt(0).toUpperCase()} {formatNumbersToString(el.size)} @ {el.open_klines[1]} ${metrics.pnl.toFixed(2)}</TextPlain>
-            </Button>
-          )
-        })}
-      </Wrap>
+  const current_open_trades = useMemo(() => {
+    if(!open) return [];
+    return [...new Set(open.map(el => el.ticker))]
+  },[open])
+
+  return (
+    <>
+
+      { current_trades.length &&
+        <Container>
+          <Wrap>
+            {current_trades.map(el => {
+              const metrics = calculate_trade_metrics(price, el.open_klines[1], el.side, el.size, el.leverage)
+              return (
+                <Button key={el._id} onClick={() => setOpenTrade(el)}>
+                  <TextPlain color={metrics.roi > 0 ? "green" : "red"}>{el.side.charAt(0).toUpperCase()} {formatNumbersToString(el.size)} @ {el.open_klines[1]} ${metrics.pnl.toFixed(2)}</TextPlain>
+                </Button>
+              )
+            })}
+          </Wrap>
+        </Container>
+      }
+
+      {current_open_trades.length &&
+        <Container>
+          <Wrap>
+            {current_open_trades.map(ticker => (
+              <Link to={`/asset?symbol=${ticker}&limit=${limits}&timeseries=${timeseries}`} key={ticker}><Text color={ticker === symbol ? "primary" : "default"}>{ticker}</Text></Link>           
+            ))}
+          </Wrap>
+        </Container>
+      }
     
       {openTrade  &&
         <Cover open={openTrade ? true : false} onClose={() => setOpenTrade(null)}>
@@ -101,47 +129,57 @@ const Trade = ({candles}: ITradeProps) => {
                 <Button color="dark" onClick={remove}><RiDeleteBin4Line/></Button>
               </Flex>
             </Between>
-            <Text>Cost: ${openTrade.size * openTrade.open_klines[1]}</Text>
-            <Text>Margin: ${openTrade.size * openTrade.open_klines[1] / openTrade.leverage}</Text>
+            <Text>Cost: ${(openTrade.size * openTrade.open_klines[1]).toFixed(2)}</Text>
+            <Text>Margin: ${(openTrade.size * openTrade.open_klines[1] / openTrade.leverage).toFixed()}</Text>
             <Text size={30}>${calculate_trade_metrics(price, openTrade.open_klines[1], openTrade.side, openTrade.size, openTrade.leverage).pnl.toFixed(2)}</Text>
           </Form>
         </Cover>
       }
 
-      <Cover open={openItem==="record"?true:false} onClose={() => setOpenItem("")}>
-        <Form onSubmit={onSubmit} width={600}>
+      {openItem==="record" &&
+        <Cover open={openItem==="record"?true:false} onClose={() => setOpenItem("")}>
+          <Form onSubmit={onSubmit} width={600}>
 
-          <Container>
-            <Text size={20}>{values.ticker} [ {values.timeseries} ]</Text>
-          </Container>
+            <Container>
+              <Text size={20}>{values.ticker} [ {values.timeseries} ]</Text>
+            </Container>
 
-          <Container>
-            <Flex>
-              <Input type="number" label1="Leverage" name="leverage" value={values.leverage} onChange={onChange} />
-              <Input type="number" label1="Size" name="size" value={values.size || ""} onChange={onChange} />
-              <Input type="number" label1="Streaks" name="x_streaks" value={values.x_streaks || ""} onChange={onChange} />
-              <Options label1="Side" options={["long", "short"]} value={values.side} onClick={(side) => onSetValue({side})} />
-            </Flex>
-          </Container>
+            <Container>
+              <Flex>
+                <Input type="number" label1="Size" name="size" value={values.size || ""} onChange={onChange} />
+                <Input type="number" label1="Streaks" name="x_streaks" value={values.x_streaks || ""} onChange={onChange} />
+                <Input type="number" label1="Leverage" name="leverage" value={values.leverage} onChange={onChange} />
+                <Options label1="Side" options={["long", "short"]} value={values.side} onClick={(side) => onSetValue({side})} />
+              </Flex>
+            </Container>
 
-          <Container>
-            <Input label1="Open Klines" name="open_klines" value={values.open_klines?.toString()} onChange={onChange} />
-          </Container>
+            <Container>
+              <Input label1="Open Klines" name="open_klines" value={values.open_klines?.toString()} onChange={onChange} />
+            </Container>
 
-          <Container>
-            <Flex>
-              <Input type="number" label1="Vwap" name="x_vwap" value={values.x_vwap} onChange={onChange} />
-              <Input type="number" label1="Escalation" name="x_escalation" value={values.x_escalation} onChange={onChange} />
-              <Input type="number" label1="Pchigh" name="x_pchigh" value={values.x_pchigh} onChange={onChange} />
-              <Input type="number" label1="Composite V" name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
-            </Flex>
-          </Container>
+            <Container>
+              <Flex>
+                <Input type="number" label1="Limits" name="x_limits" value={values.x_limits} onChange={onChange} />
+                <Input type="number" label1="Avg Volume" name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} />
+                <Input type="number" label1="Rsi" name="x_rsi" value={values.x_rsi} onChange={onChange} />
+              </Flex>
+            </Container>
 
-          <Button color="primary" type="submit">Create</Button>
+            <Container>
+              <Flex>
+                <Input type="number" label1="Vwap" name="x_vwap" value={values.x_vwap} onChange={onChange} />
+                <Input type="number" label1="Escalation" name="x_escalation" value={values.x_escalation} onChange={onChange} />
+                <Input type="number" label1="Pchigh" name="x_pchigh" value={values.x_pchigh} onChange={onChange} />
+                <Input type="number" label1="Composite V" name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
+              </Flex>
+            </Container>
 
-        </Form>
-      </Cover>
-    </Container>
+            <Button color="primary" type="submit">Create</Button>
+
+          </Form>
+        </Cover>
+      }
+    </>
   )
 };
 

@@ -44,7 +44,7 @@ exports.remove = (0, helper_1.asyncBlock)(async (req, res, next) => {
     });
 });
 exports.open = (0, helper_1.asyncBlock)(async (req, res, next) => {
-    const data = await trades_1.default.find({ user_id: req.user._id, close_klines: { $size: 0 }, ticker: req.params.id }).sort({ createdAt: -1 }).lean();
+    const data = await trades_1.default.find({ user_id: req.user._id, close_klines: { $size: 0 } }).sort({ createdAt: -1 }).lean();
     if (!data)
         return next(new helper_1.appError("Could not find trades data", 400));
     return res.status(200).json({

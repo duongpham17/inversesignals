@@ -2,7 +2,6 @@ import React, { createContext, useMemo, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export interface PropsTypes {
-    id: string | null,
     symbol: string | null,
     page: number,
     setPage: (side: 1 | -1) => void,
@@ -22,7 +21,6 @@ export interface PropsTypes {
 
 // for consuming in children components, initial return state
 export const Context = createContext<PropsTypes>({
-    id: "",
     symbol: "",
     page: 1,
     setPage: () => {},
@@ -43,7 +41,7 @@ export const Context = createContext<PropsTypes>({
 const UseContextAsset = ({children}: {children: React.ReactNode}) => {
 
     const [ location, navigate ] = [ useLocation(), useNavigate() ];
-    const [ id, symbol ] = [new URLSearchParams(location.search).get("id"), new URLSearchParams(location.search).get('symbol')];
+    const [ symbol ] = [new URLSearchParams(location.search).get('symbol')];
     const [ price, setPrice ] = useState<number>(0);
     const [ viewChart, setViewChart ] = useState<string>("candle");
     const [ openItem, setOpenItem ] = useState<string>("");
@@ -104,7 +102,7 @@ const UseContextAsset = ({children}: {children: React.ReactNode}) => {
     };
 
     const value = {
-        id, symbol,
+        symbol,
         price, setPrice,
         timeseries_set, timeseries, setTimeseries,
         limits_set, limits, setLimits, 

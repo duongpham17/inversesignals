@@ -35,13 +35,13 @@ const Hyperliquid = () => {
 
   const annotations = useMemo(() => {
     if(!open) return [];
-    return open?.map(el => ({
+    return open.filter(el => el.ticker === symbol).map(el => ({
       open: el.open_klines[1],
       size: el.size,
       side: el.side,
       leverage: el.leverage
     }))
-  }, [open]);
+  }, [open, symbol]);
 
   if(!candles.length) return <Loader />
 

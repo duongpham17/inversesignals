@@ -19,7 +19,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
 
     useEffect(() => {
         if(!trades) dispatch(Trade.find());
-    }, [trades, dispatch])
+    }, [trades, dispatch]);
 
     const value = {
 

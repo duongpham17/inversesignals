@@ -16,6 +16,9 @@ export interface ITrades {
     x_composite_volatility: number,
     x_escalation: number,
     x_vwap: number,
+    x_rsi: number,
+    x_avg_volume: number,
+    x_limits: number,
     createdAt: number;
 };
 
@@ -52,6 +55,12 @@ const TradesSchema = new Schema<ITradesDocument>({
     close_klines: {
         type: [Number],
     },
+    x_avg_volume: {
+        type: Number,
+    }, 
+    x_limits: {
+        type: Number
+    },
     x_streaks: {
         type: Number
     },
@@ -66,6 +75,9 @@ const TradesSchema = new Schema<ITradesDocument>({
     },
     x_vwap: {
         type: Number,
+    },
+    x_rsi: {
+        type: Number
     },
     createdAt: {
         type: Number,

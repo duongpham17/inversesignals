@@ -12,5 +12,5 @@ router.get('/', trades_1.find);
 router.post('/', trades_1.create);
 router.patch('/', trades_1.update);
 router.delete('/:id', trades_1.remove);
-router.get('/:id', trades_1.open);
+router.get('/open', trades_1.open);
 exports.default = router;

@@ -7,7 +7,7 @@ export const percentage_change = (current: number, old: number) => ((current - o
 
 export const calculate_market_capital = (price: number, supply: number) => price * supply;
 
-export const calculate_volume = (x: number[]) => Number(x[2]) * Number(x[3]);
+export const calculate_volume = (x: number[][]) => x.reduce((acc, cur) => (cur[1] * cur[2]) + acc, 0);
 
 export const calculate_trade_metrics = ( current: number, open: number, side: string, size: number, leverage: number = 1): {roi: number; pnl: number} => {
   if (open === 0 || size <= 0 || leverage <= 0) return { roi: 0, pnl: 0 };
@@ -142,6 +142,62 @@ export const roi = (assets: IAssets["dataset_1d"]): TRoiAcc[] => {
       roidataset.push({date, roi: acc_roi+roi})
   };
   return roidataset
+};
+
+export const volume = (candles: number[][]) => {
+  return candles.map((el => ({date: el[0], volume: el[1] * el[2]})))
+};
+
+// Current percentage change of close and open price.
+export type TRsi = {
+  date: number;
+  rsi: number;
+};
+export const rsi = ( assets: IAssets["dataset_1d"], period = 14): TRsi[] => {
+  const result: TRsi[] = [];
+  if (assets.length <= period) return result;
+  let gains = 0;
+  let losses = 0;
+  // --- Initial average gain/loss ---
+  for (let i = 1; i <= period; i++) {
+    const prevClose = Number(assets[i - 1][1]);
+    const close = Number(assets[i][1]);
+    const change = close - prevClose;
+
+    if (change > 0) gains += change;
+    else losses -= change;
+  }
+  let avgGain = gains / period;
+  let avgLoss = losses / period;
+  const firstRS = avgLoss === 0 ? 100 : avgGain / avgLoss;
+  const firstRSI = avgLoss === 0 ? 100 : 100 - 100 / (1 + firstRS);
+  result.push({
+    date: Number(assets[period][0]),
+    rsi: firstRSI,
+  });
+
+  // --- Subsequent values (smoothed) ---
+  for (let i = period + 1; i < assets.length; i++) {
+    const prevClose = Number(assets[i - 1][1]);
+    const close = Number(assets[i][1]);
+    const change = close - prevClose;
+
+    const gain = change > 0 ? change : 0;
+    const loss = change < 0 ? -change : 0;
+
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
+
+    const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+    const rsiValue = avgLoss === 0 ? 100 : 100 - 100 / (1 + rs);
+
+    result.push({
+      date: Number(assets[i][0]),
+      rsi: rsiValue,
+    });
+  }
+
+  return result;
 };
 
 // Current percentage change of close and open price.

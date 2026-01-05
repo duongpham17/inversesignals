@@ -9,6 +9,6 @@ router.get('/', find);
 router.post('/', create);
 router.patch('/', update);
 router.delete('/:id', remove);
-router.get('/:id', open);
+router.get('/open', open);
 
 export default router;

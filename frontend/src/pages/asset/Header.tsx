@@ -11,13 +11,13 @@ import { MdOutlineKeyboardBackspace } from 'react-icons/md';
 
 const Header = () => {
 
-  const { setPage, id, symbol, page } = useContext(Context);
+  const { setPage, symbol, page } = useContext(Context);
 
   return (
     <Between>
       <Flex>
         <Link to="/"><Button color="primary"><MdOutlineKeyboardBackspace/></Button></Link>
-        <Text>{id?.toUpperCase()} [ {symbol} ]</Text>
+        <Text size={20}>{symbol}</Text>
       </Flex>
       <Flex>
         {page === 1 && <Text>HYPERLIQUID</Text>}

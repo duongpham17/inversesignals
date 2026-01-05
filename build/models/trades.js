@@ -65,6 +65,12 @@ const TradesSchema = new mongoose_1.Schema({
     close_klines: {
         type: [Number],
     },
+    x_avg_volume: {
+        type: Number,
+    },
+    x_limits: {
+        type: Number
+    },
     x_streaks: {
         type: Number
     },
@@ -79,6 +85,9 @@ const TradesSchema = new mongoose_1.Schema({
     },
     x_vwap: {
         type: Number,
+    },
+    x_rsi: {
+        type: Number
     },
     createdAt: {
         type: Number,
