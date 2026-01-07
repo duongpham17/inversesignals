@@ -216,15 +216,15 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
   return (
     <div className={styles.container}>
       <div>
-        <p>
-        <span className={styles.date}>{formatDate(tooltip.time * 1000)}</span>
-        <span className={styles.close}>C:{tooltip.close}</span> 
-        <span className={styles.high}>H:{tooltip.high}</span> 
-        <span className={styles.low}>L:{tooltip.low}</span>
+        <div>
+        <p><span className={styles.date}>{formatDate(tooltip.time * 1000)}</span></p>
+        <p><span className={styles.light}>C:</span><span>{tooltip.close}</span> </p>
+        <p><span className={styles.light}>H:</span><span>{tooltip.high}</span> </p>
+        <p><span className={styles.light}>L:</span><span>{tooltip.low}</span> </p>
         <span className={styles.ema9}>EMA9:{tooltip.ema9Red?.toFixed(4)}</span> 
         <span className={styles.ema21}>EMA21:{tooltip.ema21Ref?.toFixed(4)}</span> 
         <span className={styles.vwap}>VWAP:{tooltip.vwap?.toFixed(4)}</span>
-      </p>
+      </div>
       </div>
       <div ref={containerRef} style={{ width, height }} />
     </div>
