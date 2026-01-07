@@ -15,8 +15,8 @@ const Orderbook = () => {
   const prevDepth = useRef({ buys: 0, sells: 0 });
   
   useEffect(() => {
-    const buyDepth = buys.reduce((a, b) => a + b.size, 0);
-    const sellDepth = sells.reduce((a, b) => a + b.size, 0);
+    const buyDepth = buys.reduce((a, b) => a + (b.size * b.price), 0);
+    const sellDepth = sells.reduce((a, b) => a + (b.size * b.price), 0);
     const delta = (buyDepth - prevDepth.current.buys) - (sellDepth - prevDepth.current.sells);
     prevDepth.current = { buys: buyDepth, sells: sellDepth };
     setTotal(prevTotal => prevTotal + delta);
@@ -26,7 +26,7 @@ const Orderbook = () => {
     <Container>
       <Flex>
         <Text>Orderbook Depth</Text>
-        <Text color={total > 0 ? "green" : "red"}>{formatNumbersToString(total)} </Text>
+        <Text color={total > 0 ? "green" : "red"}>${formatNumbersToString(total)} </Text>
       </Flex>
       <OrderbookChart height={200} buys={buys} sells={sells} price={price} />
     </Container>

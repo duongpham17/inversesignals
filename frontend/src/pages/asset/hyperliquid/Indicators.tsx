@@ -12,7 +12,7 @@ const Charts = ({candles}: Props) => {
 
   const style ={
     candleStickHeightChart: 250,
-    height: 170,
+    height: 150,
   };
   
   return (

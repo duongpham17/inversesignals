@@ -20,6 +20,7 @@ import TextPlain from '@components/texts/Style1';
 import Form from '@components/forms/Style1';
 import Input from '@components/inputs/Style1';
 import Options from '@components/options/Style1';
+import Line from '@components/line/Style1';
 import { RiDeleteBin4Line } from "react-icons/ri";
 
 interface ITradeProps {
@@ -123,7 +124,7 @@ const Trade = ({candles}: ITradeProps) => {
         <Cover open={openTrade ? true : false} onClose={() => setOpenTrade(null)}>
           <Form>
             <Between>
-              <Text size={20}>{openTrade.ticker} ( {openTrade.size} ) {openTrade.side.toUpperCase()} {openTrade.leverage}x</Text>
+              <Text size={20}>{openTrade.ticker} ( {formatNumbersToString(openTrade.size)} ) {openTrade.side.toUpperCase()} {openTrade.leverage}x</Text>
               <Flex>
                 <Button onClick={close} color="primary">Close</Button>
                 <Button color="dark" onClick={remove}><RiDeleteBin4Line/></Button>
@@ -131,7 +132,18 @@ const Trade = ({candles}: ITradeProps) => {
             </Between>
             <Text>Cost: ${(openTrade.size * openTrade.open_klines[1]).toFixed(2)}</Text>
             <Text>Margin: ${(openTrade.size * openTrade.open_klines[1] / openTrade.leverage).toFixed()}</Text>
-            <Text size={30}>${calculate_trade_metrics(price, openTrade.open_klines[1], openTrade.side, openTrade.size, openTrade.leverage).pnl.toFixed(2)}</Text>
+            <Text size={30} color={calculate_trade_metrics(price, openTrade.open_klines[1], openTrade.side, openTrade.size, openTrade.leverage).pnl > 0 ? "green" : "red"}>
+              ${calculate_trade_metrics(price, openTrade.open_klines[1], openTrade.side, openTrade.size, openTrade.leverage).pnl.toFixed(2)}
+            </Text>
+            <Line color="primary" />
+            <Text>Streak: {formatNumbersToString(openTrade.x_streaks)}</Text>
+            <Text>Limits: {formatNumbersToString(openTrade.x_limits)}</Text>
+            <Text>Rsi: {openTrade.x_rsi}</Text>
+            <Text>PcHigh: {formatNumbersToString(openTrade.x_pchigh)}</Text>
+            <Text>Avg Volume: ${formatNumbersToString(openTrade.x_avg_volume)}</Text>
+            <Text>Composite Volatility: {formatNumbersToString(openTrade.x_composite_volatility)}</Text>
+            <Text>VWAP: {formatNumbersToString(openTrade.x_vwap)}</Text>
+            <Text>Esclation: {formatNumbersToString(openTrade.x_escalation)}</Text>
           </Form>
         </Cover>
       }
