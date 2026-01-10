@@ -89,6 +89,9 @@ const TradesSchema = new mongoose_1.Schema({
     x_rsi: {
         type: Number
     },
+    x_candle_roi: {
+        type: Number
+    },
     createdAt: {
         type: Number,
         default: () => Date.now(),

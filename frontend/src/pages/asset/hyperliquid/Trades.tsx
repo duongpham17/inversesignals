@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useMemo } from 'react';
 import { Context } from '../UseContext';
 import { Link } from 'react-router-dom';
-import { composite_volatility, escalation, percentage_from_high, vwap, calculate_trade_metrics, calculate_volume, rsi } from '@utils/forumlas';
+import { composite_volatility, escalation, percentage_from_high, vwap, calculate_trade_metrics, calculate_volume, rsi, calculate_candle_roi } from '@utils/forumlas';
 import { THyperliquidKlines } from 'exchanges/hyperliquid';
 import { formatNumbersToString } from '@utils/functions';
 import { useAppDispatch, useAppSelector } from '@redux/hooks/useRedux';
@@ -37,6 +37,8 @@ const Trade = ({candles}: ITradeProps) => {
 
   const [ openTrade, setOpenTrade ] = useState<ITrades | null>(null);
 
+  const latest = candles.slice(-1)[0];
+
   const initialState: Partial<ITrades> = {
     ticker: symbol!,
     timeseries: timeseries,
@@ -53,7 +55,8 @@ const Trade = ({candles}: ITradeProps) => {
     x_pchigh: Math.round(percentage_from_high(candles).slice(-1)[0].pchigh),
     x_vwap: Number(vwap(candles).slice(-1)[0].vwap),
     x_composite_volatility: Math.round(composite_volatility(candles).slice(-1)[0].volatility),
-    x_rsi: Math.round(rsi(candles).slice(-1)[0].rsi)
+    x_rsi: Math.round(rsi(candles).slice(-1)[0].rsi),
+    x_candle_roi: calculate_candle_roi(latest)
   };
 
   const { values, onChange, onSubmit, onSetValue } = useForm(initialState, callback, "");
@@ -136,6 +139,7 @@ const Trade = ({candles}: ITradeProps) => {
               ${calculate_trade_metrics(price, openTrade.open_klines[1], openTrade.side, openTrade.size, openTrade.leverage).pnl.toFixed(2)}
             </Text>
             <Line color="primary" />
+            <Text>Candle Roi: {openTrade.x_candle_roi} %</Text>
             <Text>Streak: {formatNumbersToString(openTrade.x_streaks)}</Text>
             <Text>Limits: {formatNumbersToString(openTrade.x_limits)}</Text>
             <Text>Rsi: {openTrade.x_rsi}</Text>
@@ -174,6 +178,7 @@ const Trade = ({candles}: ITradeProps) => {
                 <Input type="number" label1="Limits" name="x_limits" value={values.x_limits} onChange={onChange} />
                 <Input type="number" label1="Avg Volume" name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} />
                 <Input type="number" label1="Rsi" name="x_rsi" value={values.x_rsi} onChange={onChange} />
+                <Input type="number" label1="Candle Roi" name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} />
               </Flex>
             </Container>
 

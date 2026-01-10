@@ -19,6 +19,7 @@ export interface ITrades {
     x_rsi: number,
     x_avg_volume: number,
     x_limits: number,
+    x_candle_roi: number,
     createdAt: number;
 };
 
@@ -77,6 +78,9 @@ const TradesSchema = new Schema<ITradesDocument>({
         type: Number,
     },
     x_rsi: {
+        type: Number
+    },
+    x_candle_roi: {
         type: Number
     },
     createdAt: {

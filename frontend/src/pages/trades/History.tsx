@@ -67,12 +67,13 @@ const Edit = ({data, setEdit}: Props) => {
                     <Input type="number" label1="Streaks" name="x_streaks" value={values.x_streaks || ""} onChange={onChange} />
                     <Input type="number" label1="Limits" name="x_limits" value={values.x_limits || ""} onChange={onChange} />
                     <Input type="number" label1="Avg Volume" name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} />
-                    <Input type="number" label1="Rsi" name="x_rsi" value={values.x_rsi} onChange={onChange} />
+                    <Input type="number" label1="Candle Roi" name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} />
                 </Between>
             </Container>
 
             <Container>
                 <Between>
+                    <Input type="number" label1="Rsi" name="x_rsi" value={values.x_rsi} onChange={onChange} />
                     <Input type="number" label1="Escalation" name="x_escalation" value={values.x_escalation} onChange={onChange} />
                     <Input type="number" label1="Pchigh" name="x_pchigh" value={values.x_pchigh} onChange={onChange} />
                     <Input type="number" label1="Composite V" name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
@@ -113,15 +114,15 @@ const History = () => {
             <Between>
                 <Text size={20}>Trade History [ {trades?.length} ]</Text>
                 <Flex>
-                    <Hover message="Volume"><Text size={20}>${stats.volume.toFixed(2)}</Text></Hover>
-                    <Hover message="Total PNL"><Text size={20} color={stats.total > 0 ?"green" : "red"}>${stats.total.toFixed(2)}</Text></Hover>
+                    <Hover message="Volume"><Text size={20}>${formatNumbersToString(stats.volume)}</Text></Hover>
+                    <Hover message="Total PNL"><Text size={20} color={stats.total > 0 ?"green" : "red"}>${formatNumbersToString(stats.total)}</Text></Hover>
                 </Flex>
             </Between>
 
             <Line color="primary" />
 
             {trades?.map(el => {
-                const pnl = calculate_trade_metrics(el.close_klines[1], el.open_klines[1], el.side, el.size, el.leverage).pnl;
+                const metrics = calculate_trade_metrics(el.close_klines[1], el.open_klines[1], el.side, el.size, el.leverage);
                 return (
                     <Container key={el._id} onClick={() => setEdit(el)} color={el.close_klines.length === 0 ? "red" : "primary"}>
                         <Between>
@@ -136,7 +137,8 @@ const History = () => {
                             <Link to={`/asset?symbol=${el.ticker}`}><Text>{el.ticker} {el.side.toUpperCase()} {el.leverage}x</Text></Link>
                             <Flex>
                                 <Hover message="fees"><Text color="red">( -${el.fees} )</Text></Hover>
-                                <Text size={18} color={pnl > 0 ? "green" : "red"}>${formatNumbersToString(pnl - el.fees)}</Text>
+                                <Text color={metrics.roi > 0 ? "green" : "red"}>{((metrics.roi) * 10).toFixed(2)}%</Text>
+                                <Text size={18} color={metrics.pnl > 0 ? "green" : "red"}>${formatNumbersToString(metrics.pnl - el.fees)}</Text>
                             </Flex>
                         </Between>
                         {el.close_klines.length !== 0 &&

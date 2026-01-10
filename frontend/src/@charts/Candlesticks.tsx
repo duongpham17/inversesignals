@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import useWindowSize from '@hooks/useWindow';
 import { createChart, IChartApi, CandlestickData, CandlestickSeries, LineSeries } from 'lightweight-charts';
 import { formatDate, formatNumbersToString} from '@utils/functions';
-import { calculate_trade_metrics } from '@utils/forumlas';
+import { calculate_trade_metrics, percentage_change } from '@utils/forumlas';
 
 interface CandlestickWithVolume extends CandlestickData<number> {
   volume: number;
@@ -146,7 +146,7 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
   useEffect(() => {
     if (!candleRef.current) return;
 
-    candleRef.current.setData(candles);
+    candleRef.current?.setData(candles);
     ema21Ref.current?.setData(calculateEMA(candles, 21));
     ema9Red.current?.setData(calculateEMA(candles, 9));
     vwapRef.current?.setData(calculateVWAP(candles));
@@ -218,6 +218,7 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
       <div>
         <div>
         <p><span className={styles.date}>{formatDate(tooltip.time * 1000)}</span></p>
+        <p><span>{tooltip.close > tooltip.open ? "": "-"}{percentage_change(tooltip.high, tooltip.low).toFixed(2)}%</span> </p>
         <p><span className={styles.light}>C:</span><span>{tooltip.close}</span> </p>
         <p><span className={styles.light}>H:</span><span>{tooltip.high}</span> </p>
         <p><span className={styles.light}>L:</span><span>{tooltip.low}</span> </p>

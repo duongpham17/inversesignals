@@ -1,0 +1,19 @@
+.container{
+    p{
+        display: inline-flex;
+        flex-wrap: wrap;
+    }
+
+    span{
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .date{
+        color: var(--text-light);
+        margin-right: 0.5rem;
+    }
+    .light{
+        color: var(--text-light)
+    }
+}

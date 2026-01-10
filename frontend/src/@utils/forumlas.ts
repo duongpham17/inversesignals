@@ -9,15 +9,18 @@ export const calculate_market_capital = (price: number, supply: number) => price
 
 export const calculate_volume = (x: number[][]) => x.reduce((acc, cur) => (cur[1] * cur[2]) + acc, 0);
 
-export const calculate_trade_metrics = ( current: number, open: number, side: string, size: number, leverage: number = 1): {roi: number; pnl: number} => {
-  if (open === 0 || size <= 0 || leverage <= 0) return { roi: 0, pnl: 0 };
-  const pnl =
-    side === "long"
-      ? (current - open) * size
-      : (open - current) * size;
+export const calculate_candle_roi = (candle: [number, number, number, number, number, number]) => {
+  const [close, open, high, low] = [candle[1], candle[3], candle[4], candle[5]];
+  const roi = Number(percentage_change(high, low).toFixed(2))
+  if(close > open) return roi
+  return -roi
+} 
 
-  const marginUsed = (open * size) / leverage;
-  const roi = pnl / marginUsed;
+export const calculate_trade_metrics = ( close: number, open: number, side: string, size: number, leverage: number = 1): {roi: number; pnl: number} => {
+  if (open === 0 || size <= 0 || leverage <= 0) return { roi: 0, pnl: 0 };
+  const pnl = side === "long" ? (close - open) * size : (open - close) * size;
+  const marginUsed = (open * size);
+  const roi = (pnl / marginUsed) * (leverage * 10);
   return { roi, pnl };
 };
 

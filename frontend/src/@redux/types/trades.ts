@@ -17,6 +17,7 @@ export interface ITrades {
     x_avg_volume: number,
     x_limits: number,
     x_rsi: number,
+    x_candle_roi: number,
     createdAt: number;
 };
 

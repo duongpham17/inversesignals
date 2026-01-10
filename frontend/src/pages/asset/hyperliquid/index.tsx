@@ -10,6 +10,7 @@ import Text from '@components/texts/Style1';
 import Container from '@components/containers/Style3';
 import EmaVwapChart from '@charts/EmaVwap';
 import Candlesticks from '@charts/Candlesticks';
+import VolumeChart from '@charts/Volume';
 import Orderbook from './Orderbook';
 import Trade from './Trades';
 import Indicators from './Indicators';
@@ -51,6 +52,8 @@ const Hyperliquid = () => {
       {viewChart === "candle" && <Candlesticks data={candles} height={400} annotations={annotations} precision={priceFormat(candles[0][1]).precision} minMove={priceFormat(candles[0][1]).minMove}/>}
 
       {viewChart === "line" && <EmaVwapChart data={candles} height={400} sync="crypto"/>}
+
+      <VolumeChart data={candles} />
 
       {candles.length && <Trade candles={candles}/>}
 
