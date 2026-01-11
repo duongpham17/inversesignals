@@ -40,25 +40,35 @@ const calculateEMA = ( candles: CandlestickWithVolume[], period: number) => {
 };
 
 export const calculateVWAP = (candles: CandlestickWithVolume[]) => {
-  let cumulativePV = 0;       // Sum of (TypicalPrice * Volume)
-  let cumulativeVolume = 0;   // Sum of Volume
-  const vwapSeries = [];
-  for (const candle of candles) {
-    // Compute Typical Price for this candle
-    const typicalPrice = (candle.high + candle.low + candle.close) / 3;
-    // Update cumulative sums
-    cumulativePV += typicalPrice * candle.volume;
-    cumulativeVolume += candle.volume;
-    // Compute VWAP at this candle
-    const vwap = cumulativePV / cumulativeVolume;
-    // Push to result array
-    vwapSeries.push({
-      time: candle.time,  // already in seconds
-      value: vwap,
-    });
-  }
+  let cumulativePV = 0;
+  let cumulativeVolume = 0;
 
-  return vwapSeries;
+  return candles
+    .map(candle => {
+      const { time, high, low, close, volume } = candle;
+
+      if (
+        high == null ||
+        low == null ||
+        close == null ||
+        volume == null ||
+        volume <= 0
+      ) {
+        return null;
+      }
+
+      const typicalPrice = (high + low + close) / 3;
+      cumulativePV += typicalPrice * volume;
+      cumulativeVolume += volume;
+
+      if (cumulativeVolume === 0) return null;
+
+      const vwap = cumulativePV / cumulativeVolume;
+      if (!Number.isFinite(vwap)) return null;
+
+      return { time, value: vwap };
+    })
+    .filter(Boolean);
 };
 
 const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precision=2, minMove=0.01 }) => {
