@@ -6,6 +6,7 @@ import { THyperliquidKlines } from 'exchanges/hyperliquid';
 import { formatNumbersToString } from '@utils/functions';
 import { useAppDispatch, useAppSelector } from '@redux/hooks/useRedux';
 import { ITrades } from '@redux/types/trades';
+import { leverage } from '@localstorage';
 import Trades from '@redux/actions/trades';
 import useForm from '@hooks/useForm';
 
@@ -43,7 +44,7 @@ const Trade = ({candles}: ITradeProps) => {
     ticker: symbol!,
     timeseries: timeseries,
     side: "long",
-    leverage: 10,
+    leverage: leverage.get() || 5,
     size: 0,
     fees: 0,
     open_klines: candles.slice(-1)[0],
@@ -67,6 +68,7 @@ const Trade = ({candles}: ITradeProps) => {
     values.open_klines = open_klines;
     await dispatch(Trades.create(values));
     setOpenItem("");
+    leverage.set(values.leverage!.toString())
   };
 
   const close = async () => {
@@ -82,7 +84,7 @@ const Trade = ({candles}: ITradeProps) => {
   };
 
   useEffect(() => {
-    dispatch(Trades.open())
+    dispatch(Trades.open());
   }, [dispatch, symbol]);
 
   const current_trades = useMemo(() => {
@@ -93,7 +95,7 @@ const Trade = ({candles}: ITradeProps) => {
   const current_open_trades = useMemo(() => {
     if(!open) return [];
     return [...new Set(open.map(el => el.ticker))]
-  },[open])
+  },[open]);
 
   return (
     <>

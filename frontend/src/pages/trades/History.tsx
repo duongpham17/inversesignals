@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@redux/hooks/useRedux';
 import { calculate_trade_metrics } from '@utils/forumlas';
@@ -15,7 +15,6 @@ import Form from '@components/forms/Style1';
 import Input from '@components/inputs/Style1';
 import Options from '@components/options/Style1';
 import Button from '@components/buttons/Style1';
-import Line from '@components/line/Style1';
 import Hover from '@components/hover/Style1';
 
 interface Props {
@@ -67,15 +66,20 @@ const Edit = ({data, setEdit}: Props) => {
                     <Input type="number" label1="Streaks" name="x_streaks" value={values.x_streaks || ""} onChange={onChange} />
                     <Input type="number" label1="Limits" name="x_limits" value={values.x_limits || ""} onChange={onChange} />
                     <Input type="number" label1="Avg Volume" name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} />
-                    <Input type="number" label1="Candle Roi" name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} />
                 </Between>
             </Container>
 
             <Container>
                 <Between>
                     <Input type="number" label1="Rsi" name="x_rsi" value={values.x_rsi} onChange={onChange} />
-                    <Input type="number" label1="Escalation" name="x_escalation" value={values.x_escalation} onChange={onChange} />
+                    <Input type="number" label1="Candle Roi" name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} />
                     <Input type="number" label1="Pchigh" name="x_pchigh" value={values.x_pchigh} onChange={onChange} />
+                </Between>
+            </Container>
+
+            <Container>
+                <Between>
+                    <Input type="number" label1="Escalation" name="x_escalation" value={values.x_escalation} onChange={onChange} />
                     <Input type="number" label1="Composite V" name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
                     <Input type="number" label1="Vwap" name="x_vwap" value={values.x_vwap} onChange={onChange} />
                 </Between>
@@ -96,30 +100,8 @@ const History = () => {
     
     const [edit, setEdit] = useState<ITrades | null>(null);
 
-    const stats = useMemo(() => {
-        if(!trades) return {total: 0, volume: 0};
-        let [total, volume] = [0, 0];
-        for(const x of trades){
-            if(x.close_klines.length === 0) continue;
-            const pnl = calculate_trade_metrics(x.close_klines[1], x.open_klines[1], x.side, x.size, x.leverage).pnl;
-            total+=pnl
-            volume+=(x.close_klines[1] * x.size);
-        };
-        return {total, volume}
-    }, [trades]);
-
     return (
         <>  
-
-            <Between>
-                <Text size={20}>Trade History [ {trades?.length} ]</Text>
-                <Flex>
-                    <Hover message="Volume"><Text size={20}>${formatNumbersToString(stats.volume)}</Text></Hover>
-                    <Hover message="Total PNL"><Text size={20} color={stats.total > 0 ?"green" : "red"}>${formatNumbersToString(stats.total)}</Text></Hover>
-                </Flex>
-            </Between>
-
-            <Line color="primary" />
 
             {trades?.map(el => {
                 const metrics = calculate_trade_metrics(el.close_klines[1], el.open_klines[1], el.side, el.size, el.leverage);

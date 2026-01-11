@@ -30,3 +30,9 @@ export const theme = {
   get: () => JSON.parse(localStorage.getItem(`${unique_hostname}-theme`) as any),
   set: ({name, background}: {name: string, background: string}) => localStorage.setItem(`${unique_hostname}-theme`, JSON.stringify({name, background}))
 };
+
+export const leverage = {
+  name: `${unique_hostname}-leverage`,
+  get: () => JSON.parse(localStorage.getItem(`${unique_hostname}-leverage`) as any),
+  set: (leverage: string) => localStorage.setItem(`${unique_hostname}-leverage`, leverage)
+};

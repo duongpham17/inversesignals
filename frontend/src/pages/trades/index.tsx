@@ -1,13 +1,15 @@
 import UseContext from './UseContext';
-import History from './History';
 import Page from '@components/pages/Style1';
+import Header from './Header';
+import Pages from './Pages';
 
 const Trades = () => {
   return (
     <UseContext>
-        <Page>
-            <History />
-        </Page>
+      <Page>
+        <Header/>
+        <Pages />
+      </Page>
     </UseContext>
   )
 }

@@ -1,0 +1,13 @@
+.container {
+  *:focus {
+    outline: none;
+  }
+}
+
+.tooltip{
+  background-color: var(--dark);
+  padding: 1rem;
+  p{
+    margin: 0.2rem;
+  }
+}

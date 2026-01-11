@@ -14,7 +14,6 @@ const VolumeChart: React.FC<Props> = ({ data, height = 200 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const volumeRef = useRef<ISeriesApi<'Histogram'> | null>(null);
-
   const [tooltip, setTooltip] = useState<{ time: number; volume: number }>({ time: 0, volume: 0 });
 
   // -----------------------------

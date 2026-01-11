@@ -14,7 +14,12 @@ export const calculate_candle_roi = (candle: [number, number, number, number, nu
   const roi = Number(percentage_change(high, low).toFixed(2))
   if(close > open) return roi
   return -roi
-} 
+};
+
+export const calculate_w_or_l = ( close: number, open: number, side: string): boolean => {
+  if(side === "long") return close > open ? true : false
+  return close < open ? true : false
+};
 
 export const calculate_trade_metrics = ( close: number, open: number, side: string, size: number, leverage: number = 1): {roi: number; pnl: number} => {
   if (open === 0 || size <= 0 || leverage <= 0) return { roi: 0, pnl: 0 };
