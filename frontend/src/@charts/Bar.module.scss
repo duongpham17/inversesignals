@@ -9,5 +9,9 @@
   padding: 1rem;
   p{
     margin: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100px;
   }
 }

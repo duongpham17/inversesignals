@@ -23,7 +23,7 @@ const CustomToolTips = ({ active, payload, xkey }: { active?: boolean, payload?:
         <p>{ xkey==="date" ? formatDate(arr[0] as number) : `${xkey}: ${arr[0]}`}</p>
         {arr.slice(1).map((val, idx) => (
           <p key={idx}>
-            {arrKeys[idx + 1]}: {formatNumbersToString(val as number)}
+            <span>{arrKeys[idx + 1].charAt(0).toUpperCase()}{arrKeys[idx+1].substring(1)}: </span><span>{formatNumbersToString(val as number)}</span>
           </p>
         ))}
       </div>

@@ -64,7 +64,9 @@ const Trade = ({candles}: ITradeProps) => {
 
   async function callback(){
     const customKlines: any = values.open_klines;
-    const open_klines = typeof values.open_klines === "string" ? customKlines.split(",").map((el:string) => Number(el)) as number[] : values.open_klines;
+    const open_klines = typeof values.open_klines === "string" 
+      ? customKlines.split(",").map((el: string, index: number) => index === 2 ? Math.floor(Number(el)) : Number(el)) as number[] 
+      : values.open_klines;
     values.open_klines = open_klines;
     await dispatch(Trades.create(values));
     setOpenItem("");
@@ -100,7 +102,7 @@ const Trade = ({candles}: ITradeProps) => {
   return (
     <>
 
-      { current_trades.length &&
+      { !!current_trades.length &&
         <Container>
           <Wrap>
             {current_trades.map(el => {
@@ -115,7 +117,7 @@ const Trade = ({candles}: ITradeProps) => {
         </Container>
       }
 
-      {current_open_trades.length &&
+      {!!current_open_trades.length &&
         <Container>
           <Wrap>
             {current_open_trades.map(ticker => (

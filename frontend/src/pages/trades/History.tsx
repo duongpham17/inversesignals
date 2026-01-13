@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@redux/hooks/useRedux';
 import { calculate_trade_metrics } from '@utils/forumlas';
-import { formatNumbersToString, formatDate, dateDifference} from '@utils/functions';
+import { formatNumbersToString, formatDate, dateDifference, formatPrice} from '@utils/functions';
 import { ITrades } from '@redux/types/trades';
 import Trades from '@redux/actions/trades';
 import useForm from '@hooks/useForm';
@@ -81,7 +81,7 @@ const Edit = ({data, setEdit}: Props) => {
                 <Between>
                     <Input type="number" label1="Escalation" name="x_escalation" value={values.x_escalation} onChange={onChange} />
                     <Input type="number" label1="Composite V" name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
-                    <Input type="number" label1="Vwap" name="x_vwap" value={values.x_vwap} onChange={onChange} />
+                    <Input type="number" label1="Vwap" name="x_vwap" value={formatPrice(values.x_vwap)} onChange={onChange} />
                 </Between>
             </Container>
 

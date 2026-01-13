@@ -1,34 +1,46 @@
-import { useContext, useEffect, useState, useRef } from 'react';
+import { useContext, useMemo, useEffect, useState } from 'react';
 import { Context } from '../UseContext';
 import { formatNumbersToString } from '@utils/functions';
 import { useHyperliquidOrderBook } from 'exchanges/hyperliquid';
-import OrderbookChart from '@charts/Orderbook';
+import BarChart from '@charts/Bar';
 import Text from '@components/texts/Style2';
 import Container from '@components/containers/Style3';
 import Flex from '@components/flex/Flex';
+import Hover from '@components/hover/Style1';
 
 const Orderbook = () => {
 
-  const { price, symbol, limits } = useContext(Context);
+  const { symbol } = useContext(Context);
   const { buys, sells } = useHyperliquidOrderBook(symbol!);
-  const [ total, setTotal ] = useState(0);
-  const prevDepth = useRef({ buys: 0, sells: 0 });
+  const [ orderbook, setOrderbook ] = useState<{date: number, buy: number, sell: number}[]>([]);
   
+  const data = useMemo(() => {
+    const buy_total = buys.reduce((acc, cur) => acc + (cur.price * cur.size), 0);
+    const sell_total = sells.reduce((acc, cur) => acc + (cur.price * cur.size), 0);
+    return {
+      total: buy_total+sell_total,
+      sells: sell_total,
+      buys: buy_total
+    }
+  }, [buys, sells]);
+
   useEffect(() => {
-    const buyDepth = buys.reduce((a, b) => a + (b.size * b.price), 0);
-    const sellDepth = sells.reduce((a, b) => a + (b.size * b.price), 0);
-    const delta = (buyDepth - prevDepth.current.buys) - (sellDepth - prevDepth.current.sells);
-    prevDepth.current = { buys: buyDepth, sells: sellDepth };
-    setTotal(prevTotal => prevTotal + delta);
-  }, [buys, sells, limits]);
+    const date = Date.now();
+    const buys_total = buys.reduce((acc, cur) => acc + (cur.price * cur.size), 0);
+    const sell_total = sells.reduce((acc, cur) => acc + (cur.price * cur.size), 0);
+    const orders = {date, buy: buys_total, sell: sell_total}
+    setOrderbook(state => state.length ? [...state, orders].slice(-100) : [orders] )
+  }, [buys, sells]);
 
   return (
     <Container>
       <Flex>
         <Text>Orderbook Depth</Text>
-        <Text color={total > 0 ? "green" : "red"}>${formatNumbersToString(total)} </Text>
+        <Hover message='Open Interest'><Text>${formatNumbersToString(data.total)} </Text></Hover>
+        <Hover message='Buys'><Text color={"green"}>${formatNumbersToString(data.buys)} </Text></Hover>
+        <Hover message='Sells'><Text color={"red"}>${formatNumbersToString(data.sells)} </Text></Hover>
       </Flex>
-      <OrderbookChart height={200} buys={buys} sells={sells} price={price} />
+      <BarChart data={orderbook} xkey='date' ykey="buy" zkey='sell' analysis height={200} />
     </Container>
   );
 }
