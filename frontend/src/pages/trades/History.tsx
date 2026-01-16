@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@redux/hooks/useRedux';
 import { calculate_trade_metrics } from '@utils/forumlas';
@@ -100,35 +100,51 @@ const History = () => {
     
     const [edit, setEdit] = useState<ITrades | null>(null);
 
+    const data = useMemo(() => {
+        if(!trades) return null;
+        const open_trades = trades.filter(el => !el.close_klines.length);
+        const close_trades = trades.filter(el => el.close_klines.length);
+        return {
+            open_trades,
+            close_trades
+        }
+    }, [trades]);
+
     return (
         <>  
 
-            {trades?.map(el => {
+            {data?.open_trades.map(el => {
+                return (
+                    <Container key={el._id} onClick={() => setEdit(el)} color="red">
+                        <Between>
+                            <Link to={`/asset?symbol=${el.ticker}`}><Text>{el.ticker} {el.side.toUpperCase()} {el.leverage}x</Text></Link>
+                            <Text color="light">{formatDate(el.open_klines[0])}, {dateDifference(el.open_klines[0], Date.now()).string}</Text>
+                        </Between>
+                    </Container>
+                )
+            })}
+
+            {data?.close_trades.map(el => {
                 const metrics = calculate_trade_metrics(el.close_klines[1], el.open_klines[1], el.side, el.size, el.leverage);
                 return (
-                    <Container key={el._id} onClick={() => setEdit(el)} color={el.close_klines.length === 0 ? "red" : "primary"}>
+                    <Container key={el._id} onClick={() => setEdit(el)}>
                         <Between>
                             <Text color="light">{formatDate(el.open_klines[0])}</Text>
-                            {!!el.close_klines.length && <Text color="light">{formatDate(el.close_klines[0])}</Text>}
-                            {el.close_klines.length 
-                                ? <Text color="light">{dateDifference(el.open_klines[0], el.close_klines[0]).string}</Text>
-                                : <Text color="light">{dateDifference(el.open_klines[0], Date.now()).string}</Text>
-                            }
+                            <Text color="light">{formatDate(el.close_klines[0])}</Text>
+                            <Text color="light">{dateDifference(el.open_klines[0], el.close_klines[0]).string}</Text>
                         </Between>
                         <Between>
                             <Link to={`/asset?symbol=${el.ticker}`}><Text>{el.ticker} {el.side.toUpperCase()} {el.leverage}x</Text></Link>
                             <Flex>
-                                <Hover message="fees"><Text color="red">( -${el.fees} )</Text></Hover>
-                                <Text color={metrics.roi > 0 ? "green" : "red"}>{((metrics.roi) * 10).toFixed(2)}%</Text>
-                                <Text size={18} color={metrics.pnl > 0 ? "green" : "red"}>${formatNumbersToString(metrics.pnl - el.fees)}</Text>
+                                <Hover message="Fees"><Text>( -${el.fees} )</Text></Hover>
+                                <Hover message="Roi"><Text>{((metrics.roi) * 10).toFixed(2)}%</Text></Hover>
+                                <Hover message="PNL - Fees"><Text color={metrics.pnl > 0 ? "green" : "red"}>${formatNumbersToString(metrics.pnl - el.fees)}</Text></Hover>
                             </Flex>
                         </Between>
-                        {el.close_klines.length !== 0 &&
-                            <Between>
-                                <Text>{formatNumbersToString(el.size)} = ${formatNumbersToString(el.size * el.open_klines[1])}</Text>
-                                <Hover message="Open, Close"><Text> {el.open_klines[1]} | {el.close_klines[1]}</Text></Hover>
-                            </Between>
-                        }
+                        <Between>
+                            <Text>{formatNumbersToString(el.size)} = ${formatNumbersToString(el.size * el.open_klines[1])}</Text>
+                            <Hover message="Open, Close"><Text> {el.open_klines[1]} | {el.close_klines[1]}</Text></Hover>
+                        </Between>
                     </Container>
                 )
             })}

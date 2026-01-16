@@ -143,11 +143,11 @@ export const roi = (assets: IAssets["dataset_1d"]): TRoiAcc[] => {
   const roidataset = [];
   let acc_roi = 0;
   for (const asset of assets) {
-      const date = Number(asset[0]);
-      const close = Number(asset[1]);
-      const open = Number(asset[3]);
-      const roi = percentage_change(close, open);
-      roidataset.push({date, roi: acc_roi+roi})
+    const date = Number(asset[0]);
+    const close = Number(asset[1]);
+    const open = Number(asset[3]);
+    const roi = percentage_change(close, open);
+    roidataset.push({date, roi: acc_roi+roi})
   };
   return roidataset
 };

@@ -19,14 +19,30 @@ const History = () => {
 
     const stats = useMemo(() => {
         if(!trades) return {total: 0, volume: 0};
-        let [total, volume] = [0, 0];
-        for(const x of trades){
+        let [total, volume, profit_count, loss_count, profit, loss] = [0, 0, 0, 0, 0, 0];
+        const closed_trades = trades.filter(el => el.close_klines);
+        for(const x of closed_trades){
             if(x.close_klines.length === 0) continue;
             const pnl = calculate_trade_metrics(x.close_klines[1], x.open_klines[1], x.side, x.size, x.leverage).pnl;
-            total+=pnl
+            total+=pnl;
             volume+=(x.close_klines[1] * x.size);
+            if(pnl > 0) {
+                profit_count += 1;
+                profit += pnl;
+            } else {
+                loss_count += 1;
+                loss += pnl;
+            }
         };
-        return {total, volume}
+        return {
+            total, 
+            volume, 
+            profit_count, 
+            loss_count,
+            winrate: (profit_count / closed_trades.length) * 100,
+            avg_profit: profit/profit_count,
+            avg_loss: loss/loss_count
+        }
     }, [trades]);
 
     return (
@@ -35,11 +51,12 @@ const History = () => {
                 <Flex>
                     {page === 1 && <Hover message="History"><Icon onClick={() => onPage(1)}><MdHistory/></Icon></Hover>}
                     {page === 2 && <Hover message="Analysis"><Icon onClick={() => onPage(-1)}><MdStackedLineChart/></Icon></Hover>}
-                    <Text size={18}>Trade History [ {trades?.length} ]</Text>
+                    <Text size={17}>History [ {trades?.length} ]</Text>
                 </Flex>
                 <Flex>
-                    <Hover message="Volume"><Text size={18}>${formatNumbersToString(stats.volume)}</Text></Hover>
-                    <Hover message="Total PNL"><Text size={18} color={stats.total > 0 ?"green" : "red"}>${formatNumbersToString(stats.total)}</Text></Hover>
+                    <Hover message="Volume"><Text size={17}>${formatNumbersToString(stats.volume)}</Text></Hover>
+                    <Hover message={`[ P:${stats.profit_count} $${stats.avg_profit?.toFixed(0)}, L:${stats.loss_count} $${stats.avg_loss?.toFixed(0)} ]`}><Text size={17}>{stats.winrate?.toFixed(2)} %</Text></Hover>
+                    <Hover message="PNL"><Text size={17} color={stats.total > 0 ?"green" : "red"}>${formatNumbersToString(stats.total)}</Text></Hover>
                 </Flex>
             </Between>
             <Line color='primary' />

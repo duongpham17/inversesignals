@@ -28,6 +28,7 @@ export const Reducer = (state = initialState, action: ACTIONS) => {
             return{
                 ...state,
                 open: state.open ? [payload, ...state.open] : [payload],
+                trades: state.trades ? [payload, ...state.trades] : null,
             };
         case TYPES.TRADES_OPEN:
             return{
@@ -37,7 +38,7 @@ export const Reducer = (state = initialState, action: ACTIONS) => {
         case TYPES.TRADES_CLOSE:
             return{
                 ...state,
-                open: state.trades ? state.trades.filter(el => el._id !== payload._id) : null,
+                open: state.open ? state.open.filter(el => el._id !== payload._id) : null,
             }
         default: 
             return state;

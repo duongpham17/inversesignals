@@ -62,7 +62,6 @@ const Crypto = ({assets}: {assets: IAssets[]}) => {
 };
 
 const Stock = ({assets}: {assets: IAssets[]}) => {
-
   return (
     <>
       <ContainerGrid>   

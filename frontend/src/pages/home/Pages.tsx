@@ -9,6 +9,7 @@ import ArrowsHeatmap from './ArrowsHeatmap';
 import CandlePatterns from './CandlePatterns';
 import Indicies from './Indices';
 import Streaks from './Streaks';
+import Indicators from './Indicators';
 
 const HomePage = () => {
   
@@ -19,11 +20,12 @@ const HomePage = () => {
       <Controller />
       <Line color="primary" />
       {(page === 1 || !page) &&  <Assets/>}
-      {page === 2 && <Grouped/>}
-      {page === 3 && <ArrowsHeatmap/>}
-      {page === 4 && <Streaks/>}
-      {page === 5 && <CandlePatterns/>}
-      {page === 6 && <Indicies/>}
+      {page === 2 && <Indicators/>}
+      {page === 3 && <Grouped/>}
+      {page === 4 && <ArrowsHeatmap/>}
+      {page === 5 && <Streaks/>}
+      {page === 6 && <CandlePatterns/>}
+      {page === 7 && <Indicies/>}
     </Page>
   )
 }

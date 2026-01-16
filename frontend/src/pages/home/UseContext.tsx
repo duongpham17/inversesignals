@@ -64,7 +64,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
     }, [dispatch, page, indices])
 
     const onPage = (side: -1 | 1) => {
-        const maxPage = 6;
+        const maxPage = 7;
         const next = page + side;
         if (next < 1 || next > maxPage) return;
 
