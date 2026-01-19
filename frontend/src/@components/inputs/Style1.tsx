@@ -7,7 +7,7 @@ interface Props extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLIn
     error?: boolean,
 };
 
-const Input = ({label1, label2, error, ...props}:Props) => {
+const Style1 = ({label1, label2, error, ...props}:Props) => {
     
   return (
     <div className={styles.container}>
@@ -31,4 +31,4 @@ const Input = ({label1, label2, error, ...props}:Props) => {
   )
 }
 
-export default Input
+export default Style1

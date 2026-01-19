@@ -2,18 +2,18 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@redux/hooks/useRedux';
 import { calculate_trade_metrics } from '@utils/forumlas';
-import { formatNumbersToString, formatDate, dateDifference, formatPrice} from '@utils/functions';
+import { formatNumbersToString, formatDate, dateDifference} from '@utils/functions';
 import { ITrades } from '@redux/types/trades';
 import Trades from '@redux/actions/trades';
 import useForm from '@hooks/useForm';
 import Text from '@components/texts/Style2';
 import Between from '@components/flex/Between';
 import Flex from '@components/flex/Flex';
-import Container from '@components/containers/Style1';
+import Container from '@components/containers/Style3';
 import Cover from '@components/covers/Style2';
 import Form from '@components/forms/Style1';
-import Input from '@components/inputs/Style1';
-import Options from '@components/options/Style1';
+import Input from '@components/inputs/Style2';
+import Options from '@components/options/Style3';
 import Button from '@components/buttons/Style1';
 import Hover from '@components/hover/Style1';
 
@@ -46,48 +46,34 @@ const Edit = ({data, setEdit}: Props) => {
         <Form onSubmit={onSubmit} width={600}>
 
             <Container>
-                <Between>
-                    <Input label1="Ticker" name="ticker" value={values.ticker} onChange={onChange} />
-                    <Input label1="Timeseries" name="timeseries" value={values.timeseries} onChange={onChange} />
-                    <Input type="number" label1="Leverage" name="leverage" value={values.leverage} onChange={onChange} />
-                    <Input type="number" label1="Size" name="size" value={values.size} onChange={onChange} />
-                    <Input type="number" label1="fees" name="fees" value={values.fees} onChange={onChange} />
-                    <Options label1="Side" options={["long", "short"]} value={values.side} onClick={(side) => onSetValue({side})} />
-                </Between>
+                <Input label="Ticker: " name="ticker" value={values.ticker || ""} onChange={onChange} light/>
+                <Input label="Timeseries: " name="timeseries" value={values.timeseries || ""} onChange={onChange} light/>
+                <Input type="number" label="Leverage: " name="leverage" value={values.leverage || ""} onChange={onChange} light/>
+                <Input type="number" label="Position Size: " name="size" value={values.size || ""} onChange={onChange} light/>
+                <Input type="number" label="Fees: " name="fees" value={values.fees || ""} onChange={onChange} light/>
+                <Options label="Side: " options={["long", "short"]} value={values.side} onClick={(side) => onSetValue({side})} light />
             </Container>
 
             <Container>
-                <Input label1="Open Klines" name="open_klines" value={values.open_klines?.toString()} onChange={onChange} />
-                <Input label1="Close Klines" name="close_klines" value={values.close_klines?.toString()} onChange={onChange} />
+                <Input label="Open Klines" name="open_klines" value={values.open_klines?.toString()} onChange={onChange} light />
+                <Input label="Close Klines" name="close_klines" value={values.close_klines?.toString()} onChange={onChange} light />
             </Container>
 
             <Container>
-                <Between>
-                    <Input type="number" label1="Streaks" name="x_streaks" value={values.x_streaks || ""} onChange={onChange} />
-                    <Input type="number" label1="Limits" name="x_limits" value={values.x_limits || ""} onChange={onChange} />
-                    <Input type="number" label1="Avg Volume" name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} />
-                </Between>
-            </Container>
-
-            <Container>
-                <Between>
-                    <Input type="number" label1="Rsi" name="x_rsi" value={values.x_rsi} onChange={onChange} />
-                    <Input type="number" label1="Candle Roi" name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} />
-                    <Input type="number" label1="Pchigh" name="x_pchigh" value={values.x_pchigh} onChange={onChange} />
-                </Between>
-            </Container>
-
-            <Container>
-                <Between>
-                    <Input type="number" label1="Escalation" name="x_escalation" value={values.x_escalation} onChange={onChange} />
-                    <Input type="number" label1="Composite V" name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
-                    <Input type="number" label1="Vwap" name="x_vwap" value={formatPrice(values.x_vwap)} onChange={onChange} />
-                </Between>
+                <Input type="number" label="Streaks: " name="x_streaks" value={values.x_streaks || ""} onChange={onChange} light/>
+                <Input type="number" label="Limits: " name="x_limits" value={values.x_limits || ""} onChange={onChange} light/>
+                <Input type="number" label="Avg Volume: " name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} light/>
+                <Input type="number" label="Rsi: " name="rsi" value={values.x_rsi} onChange={onChange} light />
+                <Input type="number" label="Candle Roi: " name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} light />
+                <Input type="number" label="Pchigh: " name="x_pchigh" value={values.x_pchigh} onChange={onChange} light />
+                <Input type="number" label="Escalation: " name="x_escalation" value={values.x_escalation} onChange={onChange} light />
+                <Input type="number" label="Composite Volatility: " name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} light />
+                <Input type="number" label="Vwap: " name="x_vwap" value={values.x_vwap} onChange={onChange} light />
             </Container>
 
             {edited && <Button color="primary" type="submit" loading={loading}>Update</Button>}
 
-            <Button color="dark" warning loading={loading} onClick={onDelete}>Delete</Button>
+            {!edited && <Button color="dark" warning loading={loading} onClick={onDelete}>Delete</Button>}
 
         </Form>
     </Cover>

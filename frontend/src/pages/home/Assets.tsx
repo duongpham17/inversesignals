@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { IAssets } from '@redux/types/assets';
 import { formatNumbersToString } from '@utils/functions';
 import { percentage_change } from '@utils/forumlas';
-import ContainerGrid from '@components/containers/Style1';
+import Container from '@components/containers/Style3';
 import Search from '@components/searchbars/Style2';
 import Button from '@components/buttons/Style1';
 import Wrap from '@components/flex/Wrap';
@@ -34,18 +34,18 @@ const Crypto = ({assets}: {assets: IAssets[]}) => {
 
   return (
     <>
-    <ContainerGrid>   
+    <Container>   
       <Between>
         <Text style={{width: styles.width1}}>NAME</Text>
         <Text style={{width: styles.width2}}>PRICE</Text>
         <Text style={{width: styles.width2}}>MCAP</Text>
         <Text style={{width: styles.width2}}>ROI</Text>
       </Between>
-    </ContainerGrid>
+    </Container>
       {mcap.map((el, index) => {
         const roi = percentage_change(latest_price(el), open_price(el))
         return (
-          <ContainerGrid key={el._id}>
+          <Container key={el._id}>
             <Link to={`/asset?symbol=${el.ticker}`}>
               <Between key={el._id}>
                 <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
@@ -54,7 +54,7 @@ const Crypto = ({assets}: {assets: IAssets[]}) => {
                 <Text color={roi>0?"green":"red"} style={{width: styles.width2}}>{roi.toFixed(2)} %</Text>
               </Between>
             </Link>
-          </ContainerGrid>
+          </Container>
         )
       })}
     </>
@@ -64,18 +64,18 @@ const Crypto = ({assets}: {assets: IAssets[]}) => {
 const Stock = ({assets}: {assets: IAssets[]}) => {
   return (
     <>
-      <ContainerGrid>   
+      <Container>   
         <Between>
           <Text style={{width: styles.width1}}>NAME</Text>
           <Text style={{width: styles.width2}}>ROI</Text>
           <Text style={{width: styles.width2}}>PRICE</Text>
           <Text style={{width: styles.width2}}>VOLUME</Text>
         </Between>
-      </ContainerGrid>
+      </Container>
       {assets.map((el, index) => {
         const roi = percentage_change(latest_price(el), open_price(el))
         return (
-          <ContainerGrid key={el._id}>
+          <Container key={el._id}>
             <Link to={`/asset?id=${el.name}&symbol=${el.ticker}`}>
               <Between key={el._id}>
                 <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
@@ -84,7 +84,7 @@ const Stock = ({assets}: {assets: IAssets[]}) => {
                 <Hover message="Volume"><Text style={{width: styles.width2}}>$ {formatNumbersToString(latest_volume(el))}</Text></Hover>
               </Between>
             </Link>
-          </ContainerGrid>
+          </Container>
         )
       })}
     </>
@@ -100,7 +100,7 @@ const SearchCrypto = ({assets}: {assets:IAssets[]}) => {
   };
 
   return (
-    <ContainerGrid>
+    <Container>
       <Search data={assets.map(el => el.name.toLowerCase())}>
         {(results) => 
           <Wrap>
@@ -110,7 +110,7 @@ const SearchCrypto = ({assets}: {assets:IAssets[]}) => {
           </Wrap>
         }
       </Search>
-    </ContainerGrid>
+    </Container>
   )
 };
 

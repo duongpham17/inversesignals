@@ -51,12 +51,12 @@ const History = () => {
                 <Flex>
                     {page === 1 && <Hover message="History"><Icon onClick={() => onPage(1)}><MdHistory/></Icon></Hover>}
                     {page === 2 && <Hover message="Analysis"><Icon onClick={() => onPage(-1)}><MdStackedLineChart/></Icon></Hover>}
-                    <Text size={17}>History [ {trades?.length} ]</Text>
+                    <Hover message={`${trades?.length}`}><Text>History</Text></Hover>
+                    <Hover message="Volume"><Text>${formatNumbersToString(stats.volume)}</Text></Hover>
                 </Flex>
                 <Flex>
-                    <Hover message="Volume"><Text size={17}>${formatNumbersToString(stats.volume)}</Text></Hover>
-                    <Hover message={`[ P:${stats.profit_count} $${stats.avg_profit?.toFixed(0)}, L:${stats.loss_count} $${stats.avg_loss?.toFixed(0)} ]`}><Text size={17}>{stats.winrate?.toFixed(2)} %</Text></Hover>
-                    <Hover message="PNL"><Text size={17} color={stats.total > 0 ?"green" : "red"}>${formatNumbersToString(stats.total)}</Text></Hover>
+                    <Hover message={`[ P:${stats.profit_count} $${stats.avg_profit?.toFixed(0)}, L:${stats.loss_count} $${stats.avg_loss?.toFixed(0)} ]`}><Text>{stats.winrate?.toFixed(2)} %</Text></Hover>
+                    <Hover message="PNL"><Text color={stats.total > 0 ?"green" : "red"}>${formatNumbersToString(stats.total)}</Text></Hover>
                 </Flex>
             </Between>
             <Line color='primary' />

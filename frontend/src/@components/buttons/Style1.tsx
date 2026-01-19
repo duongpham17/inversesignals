@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode,
     loading?: boolean,
-    color?: "primary"| "selected" | "white" | "black" | "dark" | "light" | "red" | "green",
+    color?: "primary"| "selected" | "white" | "black" | "dark" | "light" | "red" | "green" | "default",
     margin?: boolean,
     warning?: boolean,
 };
