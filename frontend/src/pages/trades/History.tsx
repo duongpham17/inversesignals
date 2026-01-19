@@ -46,29 +46,29 @@ const Edit = ({data, setEdit}: Props) => {
         <Form onSubmit={onSubmit} width={600}>
 
             <Container>
-                <Input label="Ticker: " name="ticker" value={values.ticker || ""} onChange={onChange} light/>
-                <Input label="Timeseries: " name="timeseries" value={values.timeseries || ""} onChange={onChange} light/>
-                <Input type="number" label="Leverage: " name="leverage" value={values.leverage || ""} onChange={onChange} light/>
-                <Input type="number" label="Position Size: " name="size" value={values.size || ""} onChange={onChange} light/>
-                <Input type="number" label="Fees: " name="fees" value={values.fees || ""} onChange={onChange} light/>
-                <Options label="Side: " options={["long", "short"]} value={values.side} onClick={(side) => onSetValue({side})} light />
+                <Input label="Ticker: " name="ticker" value={values.ticker || ""} onChange={onChange}/>
+                <Input label="Timeseries: " name="timeseries" value={values.timeseries || ""} onChange={onChange}/>
+                <Input type="number" label="Leverage: " name="leverage" value={values.leverage || ""} onChange={onChange}/>
+                <Input type="number" label="Position Size: " name="size" value={values.size || ""} onChange={onChange}/>
+                <Input type="number" label="Fees: " name="fees" value={values.fees || ""} onChange={onChange}/>
+                <Options label="Side: " options={["long", "short"]} value={values.side} onClick={(side) => onSetValue({side})} />
             </Container>
 
             <Container>
-                <Input label="Open Klines" name="open_klines" value={values.open_klines?.toString()} onChange={onChange} light />
-                <Input label="Close Klines" name="close_klines" value={values.close_klines?.toString()} onChange={onChange} light />
+                <Input label="Open Klines" name="open_klines" value={values.open_klines?.toString()} onChange={onChange} />
+                <Input label="Close Klines" name="close_klines" value={values.close_klines?.toString()} onChange={onChange} />
             </Container>
 
             <Container>
-                <Input type="number" label="Streaks: " name="x_streaks" value={values.x_streaks || ""} onChange={onChange} light/>
-                <Input type="number" label="Limits: " name="x_limits" value={values.x_limits || ""} onChange={onChange} light/>
-                <Input type="number" label="Avg Volume: " name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} light/>
-                <Input type="number" label="Rsi: " name="rsi" value={values.x_rsi} onChange={onChange} light />
-                <Input type="number" label="Candle Roi: " name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} light />
-                <Input type="number" label="Pchigh: " name="x_pchigh" value={values.x_pchigh} onChange={onChange} light />
-                <Input type="number" label="Escalation: " name="x_escalation" value={values.x_escalation} onChange={onChange} light />
-                <Input type="number" label="Composite Volatility: " name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} light />
-                <Input type="number" label="Vwap: " name="x_vwap" value={values.x_vwap} onChange={onChange} light />
+                <Input type="number" label="Streaks: " name="x_streaks" value={values.x_streaks || ""} onChange={onChange}/>
+                <Input type="number" label="Limits: " name="x_limits" value={values.x_limits || ""} onChange={onChange}/>
+                <Input type="number" label="Avg Volume: " name="x_avg_volume" value={values.x_avg_volume} onChange={onChange}/>
+                <Input type="number" label="Rsi: " name="rsi" value={values.x_rsi} onChange={onChange} />
+                <Input type="number" label="Candle Roi: " name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} />
+                <Input type="number" label="Pchigh: " name="x_pchigh" value={values.x_pchigh} onChange={onChange} />
+                <Input type="number" label="Escalation: " name="x_escalation" value={values.x_escalation} onChange={onChange} />
+                <Input type="number" label="Composite Volatility: " name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
+                <Input type="number" label="Vwap: " name="x_vwap" value={values.x_vwap} onChange={onChange} />
             </Container>
 
             {edited && <Button color="primary" type="submit" loading={loading}>Update</Button>}
@@ -115,8 +115,8 @@ const History = () => {
                 return (
                     <Container key={el._id} onClick={() => setEdit(el)}>
                         <Between>
-                            <Text color="light">{formatDate(el.open_klines[0])}</Text>
-                            <Text color="light">{formatDate(el.close_klines[0])}</Text>
+                            <Hover message="Open Date"><Text color="light">{formatDate(el.open_klines[0])}</Text></Hover>
+                            <Hover message="Close Date"><Text color="light">{formatDate(el.close_klines[0])}</Text></Hover>
                             <Text color="light">{dateDifference(el.open_klines[0], el.close_klines[0]).string}</Text>
                         </Between>
                         <Between>

@@ -4,18 +4,12 @@
     display: flex;
     align-items: center;
     
-    .labels{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        p{
-            color: var(--text-light);
-        }
-        svg{
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
-        }
+    span{
+        border: 1px solid transparent;
+    }
+
+    .light{
+        color: var(--text-light)
     }
 
     select {
@@ -27,14 +21,11 @@
         outline: none;
         cursor: pointer;
         box-sizing: border-box;
+        font-size: 0.9rem;
 
         &:hover{
             border-bottom: 1px solid var(--primary);
         }
-    }
-
-    .light{
-        color: var(--text-light)
     }
 
 }

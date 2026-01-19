@@ -10,7 +10,7 @@ interface Props {
   light?: boolean,
 };
 
-const Style1 = ({label, options, value, onClick, color="default", light=false}:Props) => {
+const Style1 = ({label, options, value, onClick, color="default", light=true}:Props) => {
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       onClick(e.target.value);
@@ -22,7 +22,7 @@ const Style1 = ({label, options, value, onClick, color="default", light=false}:P
         <span className={light ? styles.light : ""}>{label} </span>
 
         <select key={label} onChange={handleChange} value={value} className={styles[color]}>
-        {options.map((el, index) => <option key={el+index} value={el}>{el}</option>)}
+          {options.map((el, index) => <option key={el+index} value={el}>{el}</option>)}
         </select>
 
       </div>

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { rsi, roi, percentage_from_high, composite_volatility, escalation } from '@utils/forumlas';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import Container from '@components/containers/Style3';
-import TextIndex from '@components/texts/Style2';
+import TextIndent from '@components/texts/Style2';
 import Text from '@components/texts/Style1';
 import Between from '@components/flex/Between';
 import Wrap from '@components/flex/Wrap';
@@ -49,11 +49,6 @@ const Pchigh = () => {
       direction: state.indicator === indicator ? (state.direction === 1 ? -1 : 1) : -1
     }));
   };
-    
-  const styles = {
-    name: "60px",
-    width: "100px"
-  };
 
   return (
     <>
@@ -61,25 +56,25 @@ const Pchigh = () => {
       <Wrap>
         {indicators.map(el => 
           <Button key={el} onClick={() => onSort(el)} color={el===sort.indicator?"primary":"default"}>
-            <Text>{el.toUpperCase()}</Text>
+            <Text>{el}</Text>
             <Text> {sort.indicator === el && sort.direction === -1 ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown/>}</Text>
           </Button>
         )}
       </Wrap>
-      <>
-        {data_sorted?.map(el =>
-          <Container key={el.ticker}>
-            <Between>
-              <Link to={`/asset?symbol=${el.ticker}`}><Text style={{width: styles.name}}>{el.ticker}</Text></Link>
-              {sort.indicator === "rsi" &&<TextIndex style={{width: styles.width}} color={el.rsi > 75 ? "green" : el.rsi < 25 ? "red" : "default"}>{el.rsi}</TextIndex>}
-              {sort.indicator === "roi" && <TextIndex style={{width: styles.width}} color={el.roi > 0 ? "green" : "red"}>{el.roi}</TextIndex>}
-              {sort.indicator === "pchigh" && <TextIndex style={{width: styles.width}} color={el.pchigh > 75 ? "green" : el.pchigh < 25 ? "red" : "default"}>{el.pchigh}</TextIndex>}
-              {sort.indicator === "escalation" && <TextIndex style={{width: styles.width}} color={el.escalation > 0 ? "green" : "red"}>{el.escalation}</TextIndex>}
-              {sort.indicator === "cvolatility" && <TextIndex style={{width: styles.width}}>{el.cvolatility}</TextIndex>}
-            </Between>
-          </Container>
-        )}
-      </>
+
+      {data_sorted?.map(el =>
+        <Container key={el.ticker}>
+          <Between>
+            <Link to={`/asset?symbol=${el.ticker}`}><Text>{el.ticker}</Text></Link>
+            {sort.indicator === "rsi" &&<TextIndent color={el.rsi > 75 ? "green" : el.rsi < 25 ? "red" : "default"}>{el.rsi}</TextIndent>}
+            {sort.indicator === "roi" && <TextIndent color={el.roi > 0 ? "green" : "red"}>{el.roi}</TextIndent>}
+            {sort.indicator === "pchigh" && <TextIndent color={el.pchigh > 75 ? "green" : el.pchigh < 25 ? "red" : "default"}>{el.pchigh}</TextIndent>}
+            {sort.indicator === "escalation" && <TextIndent color={el.escalation > 0 ? "green" : "red"}>{el.escalation}</TextIndent>}
+            {sort.indicator === "cvolatility" && <TextIndent>{el.cvolatility}</TextIndent>}
+          </Between>
+        </Container>
+      )}
+
     </>
   )
 }

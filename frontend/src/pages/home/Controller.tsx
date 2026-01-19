@@ -13,7 +13,7 @@ const Controller = () => {
 
     const pages = {
         setting_0: [7],
-        setting_1: [1,2,3],
+        setting_1: [1,3],
         setting_2: [2,3,4,5,6],
     };
 

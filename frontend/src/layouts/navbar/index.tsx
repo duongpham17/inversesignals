@@ -30,7 +30,7 @@ const NavbarLayout = () => {
                 { user 
                 ?
                     <Flex>
-                        <Hover message="Arrow Heatmap"><Link to="/?page=4"><IoIosArrowRoundDown/></Link></Hover>
+                        <Hover message="Arrow Heatmap"><Link to="/?page=3"><IoIosArrowRoundDown/></Link></Hover>
                         <Hover message="Analysis"><Link to="/?page=2"><BiSolidAnalyse/></Link></Hover>
                         <Hover message="Trades"><Link to="/trades"><RiFileHistoryLine/></Link></Hover>
                         <Hover message="Profile"><Link to="/profile"><MdOutlinePerson/></Link></Hover>

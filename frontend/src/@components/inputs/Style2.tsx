@@ -7,7 +7,7 @@ interface Props extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLIn
   light?: boolean
 };
 
-const Style2 = ({label, error, light=false, ...props}:Props) => {
+const Style2 = ({label, error, light=true, ...props}:Props) => {
     
   return (
     <div className={styles.container}>

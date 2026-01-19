@@ -19,8 +19,8 @@ import Button from '@components/buttons/Style1';
 import Text from '@components/texts/Style2';
 import TextPlain from '@components/texts/Style1';
 import Form from '@components/forms/Style1';
-import Input from '@components/inputs/Style1';
-import Options from '@components/options/Style1';
+import Input from '@components/inputs/Style2';
+import Options from '@components/options/Style3';
 import Line from '@components/line/Style1';
 import { RiDeleteBin4Line } from "react-icons/ri";
 
@@ -161,38 +161,25 @@ const Trade = ({candles}: ITradeProps) => {
           <Form onSubmit={onSubmit} width={600}>
 
             <Container>
-              <Text size={20}>{values.ticker} [ {values.timeseries} ]</Text>
+              <Text size={20}>{values.ticker} [ {values.timeseries} ] [ {values.x_limits} ]</Text>
             </Container>
 
             <Container>
-              <Flex>
-                <Input type="number" label1="Size" name="size" value={values.size || ""} onChange={onChange} />
-                <Input type="number" label1="Streaks" name="x_streaks" value={values.x_streaks || ""} onChange={onChange} />
-                <Input type="number" label1="Leverage" name="leverage" value={values.leverage} onChange={onChange} />
-                <Options label1="Side" options={["long", "short"]} value={values.side} onClick={(side) => onSetValue({side})} />
-              </Flex>
+              <Input type="number" label="Size: " name="size" value={values.size || ""} onChange={onChange} />
+              <Input type="number" label="Streaks: " name="x_streaks" value={values.x_streaks || ""} onChange={onChange} />
+              <Input type="number" label="Leverage: " name="leverage" value={values.leverage} onChange={onChange} />
+              <Options label="Side" options={["long", "short"]} value={values.side} onClick={(side) => onSetValue({side})} />
+              <Input label="Open Klines: " name="open_klines" value={values.open_klines?.toString()} onChange={onChange} />
             </Container>
 
             <Container>
-              <Input label1="Open Klines" name="open_klines" value={values.open_klines?.toString()} onChange={onChange} />
-            </Container>
-
-            <Container>
-              <Flex>
-                <Input type="number" label1="Limits" name="x_limits" value={values.x_limits} onChange={onChange} />
-                <Input type="number" label1="Avg Volume" name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} />
-                <Input type="number" label1="Rsi" name="x_rsi" value={values.x_rsi} onChange={onChange} />
-                <Input type="number" label1="Candle Roi" name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} />
-              </Flex>
-            </Container>
-
-            <Container>
-              <Flex>
-                <Input type="number" label1="Vwap" name="x_vwap" value={values.x_vwap} onChange={onChange} />
-                <Input type="number" label1="Escalation" name="x_escalation" value={values.x_escalation} onChange={onChange} />
-                <Input type="number" label1="Pchigh" name="x_pchigh" value={values.x_pchigh} onChange={onChange} />
-                <Input type="number" label1="Composite V" name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
-              </Flex>
+                <Input type="number" label="Rsi: " name="x_rsi" value={values.x_rsi} onChange={onChange} />
+                <Input type="number" label="Avg Volume: " name="x_avg_volume" value={values.x_avg_volume} onChange={onChange} />
+                <Input type="number" label="Candle Roi: " name="x_candle_roi" value={values.x_candle_roi} onChange={onChange} />
+                <Input type="number" label="Vwap: " name="x_vwap" value={values.x_vwap} onChange={onChange} />
+                <Input type="number" label="Escalation: " name="x_escalation" value={values.x_escalation} onChange={onChange} />
+                <Input type="number" label="Pchigh: " name="x_pchigh" value={values.x_pchigh} onChange={onChange} />
+                <Input type="number" label="Composite V: " name="x_composite_volatility" value={values.x_composite_volatility} onChange={onChange} />
             </Container>
 
             <Button color="primary" type="submit">Create</Button>

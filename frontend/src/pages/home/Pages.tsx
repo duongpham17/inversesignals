@@ -21,8 +21,8 @@ const HomePage = () => {
       <Line color="primary" />
       {(page === 1 || !page) &&  <Assets/>}
       {page === 2 && <Indicators/>}
-      {page === 3 && <Grouped/>}
-      {page === 4 && <ArrowsHeatmap/>}
+      {page === 3 && <ArrowsHeatmap/>}
+      {page === 4 && <Grouped/>}
       {page === 5 && <Streaks/>}
       {page === 6 && <CandlePatterns/>}
       {page === 7 && <Indicies/>}
