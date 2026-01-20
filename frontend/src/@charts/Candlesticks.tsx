@@ -223,6 +223,31 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
     };
   }, []);
 
+  useEffect(() => {
+  if (!chartRef.current || !candleRef.current) return;
+
+  const handleClick = (param: any) => {
+    if (!param.time || !param.seriesData) return;
+
+    const candle = param.seriesData.get(candleRef.current);
+    if (!candle) return;
+
+    const textToCopy = `[${candle.time}, ${candle.close}, 0, ${candle.open}, ${candle.high}, ${candle.low}]`
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      console.log('Candle data copied to clipboard');
+    }).catch(err => {
+      console.error('Clipboard copy failed', err);
+    });
+  };
+
+  chartRef.current.subscribeClick(handleClick);
+
+  return () => {
+    chartRef.current?.unsubscribeClick(handleClick);
+  };
+}, []);
+
   return (
     <div className={styles.container}>
       <div>
@@ -230,6 +255,7 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
         <p><span className={styles.date}>{formatDate(tooltip.time * 1000)}</span></p>
         <p><span>{tooltip.close > tooltip.open ? "": "-"}{percentage_change(tooltip.high, tooltip.low).toFixed(2)}%</span> </p>
         <p><span className={styles.light}>C:</span><span>{tooltip.close}</span> </p>
+        <p><span className={styles.light}>O:</span><span>{tooltip.open}</span> </p>
         <p><span className={styles.light}>H:</span><span>{tooltip.high}</span> </p>
         <p><span className={styles.light}>L:</span><span>{tooltip.low}</span> </p>
         <span className={styles.ema9}>EMA9:{tooltip.ema9Red?.toFixed(4)}</span> 
