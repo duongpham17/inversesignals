@@ -18,7 +18,7 @@ const Symbols = () => {
     <Wrap>
       {data?.map(el => 
         <Button key={el} color="dark">
-          <Link to={`/assets?symbol={el}`}>{el}</Link>
+          <Link to={`/asset?symbol=${el}`}>{el}</Link>
         </Button>
       )}
     </Wrap>

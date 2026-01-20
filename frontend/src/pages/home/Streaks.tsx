@@ -106,7 +106,7 @@ const Streaks = ({assets}: Props) => {
           key={el.name + el.streak + index} // safe unique key
           color={el.streak > 0 ? "green" : "red"}
         >
-          <Link to={`/asset?id=${el.name}&symbol=${el.ticker}&timeseries=${timeseries}`}>
+          <Link to={`/asset?symbol=${el.ticker}&timeseries=${timeseries}`}>
             <Text color={el.streak > 0 ? "green" : "red"} size={20}>
               {el.streak} {el.name.toUpperCase()}
             </Text>
