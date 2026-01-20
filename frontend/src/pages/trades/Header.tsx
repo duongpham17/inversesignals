@@ -3,13 +3,13 @@ import { Context } from './UseContext';
 import { useAppSelector } from '@redux/hooks/useRedux';
 import { calculate_trade_metrics } from '@utils/forumlas';
 import { formatNumbersToString } from '@utils/functions';
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Text from '@components/texts/Style2';
 import Between from '@components/flex/Between';
 import Flex from '@components/flex/Flex';
 import Line from '@components/line/Style1';
 import Icon from '@components/icons/Style1';
 import Hover from '@components/hover/Style1';
-import { MdStackedLineChart, MdHistory } from "react-icons/md";
 
 const History = () => {
 
@@ -49,9 +49,9 @@ const History = () => {
         <>
             <Between>
                 <Flex>
-                    {page === 1 && <Hover message="History"><Icon onClick={() => onPage(1)}><MdHistory/></Icon></Hover>}
-                    {page === 2 && <Hover message="Analysis"><Icon onClick={() => onPage(-1)}><MdStackedLineChart/></Icon></Hover>}
-                    <Hover message={`${trades?.length}`}><Text>History</Text></Hover>
+                    <Icon onClick={() => onPage(-1)}><MdKeyboardArrowLeft/></Icon>
+                    <Icon onClick={() => onPage(1)}><MdKeyboardArrowRight/></Icon>
+                    <Hover message={`${trades?.length}`}><Text>{page === 1 && "History"} {page === 2 && "Indicators"} {page === 3 && "Tickers"}</Text></Hover>
                     <Hover message="Volume"><Text>${formatNumbersToString(stats.volume)}</Text></Hover>
                 </Flex>
                 <Flex>

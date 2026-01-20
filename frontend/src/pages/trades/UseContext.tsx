@@ -26,7 +26,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
     }, [location.search]);
 
     const onPage = (side: -1 | 1) => {
-        const maxPage = 2;
+        const maxPage = 3;
         const next = page + side;
         if (next < 1 || next > maxPage) return;
 
