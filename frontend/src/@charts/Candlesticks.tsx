@@ -232,7 +232,7 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
     const candle = param.seriesData.get(candleRef.current);
     if (!candle) return;
 
-    const textToCopy = `[${candle.time}, ${candle.close}, 0, ${candle.open}, ${candle.high}, ${candle.low}]`
+    const textToCopy = `${candle.time * 1000}, ${candle.close}, 0, ${candle.open}, ${candle.high}, ${candle.low}`
 
     navigator.clipboard.writeText(textToCopy).then(() => {
       console.log('Candle data copied to clipboard');
