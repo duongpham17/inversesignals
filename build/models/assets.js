@@ -82,6 +82,10 @@ const AssetsSchema = new mongoose_1.Schema({
         type: [[Number]],
         default: [],
     },
+    updatedAt: {
+        type: Number,
+        default: () => Date.now()
+    },
     createdAt: {
         type: Number,
         default: () => Date.now(),

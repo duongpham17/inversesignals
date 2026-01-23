@@ -22,12 +22,13 @@ const customConsoleLog = (message, color = "green") => {
     console.log("-------------------------------------------------------");
     console.log(Color[color], message);
 };
+const minutes = 60_000 * 10;
 const collect = async () => {
     console.time("collect");
     await database();
     const assets = await assets_1.default.find().lean();
     customConsoleLog(`TOTAL ASSETS: ${assets.length}`);
-    await Promise.all(assets.map(async (x) => {
+    await Promise.all(assets.filter(el => (el.updatedAt + minutes) < Date.now()).map(async (x) => {
         if (!x.api)
             return;
         try {
@@ -38,7 +39,13 @@ const collect = async () => {
                 apis_1.apis[x.api](x.ticker, "1w"),
             ]);
             const slice = -100;
-            const update = { dataset_1h: h1.slice(slice), dataset_4h: h4.slice(slice), dataset_1d: d1.slice(slice), dataset_1w: w1.slice(slice) };
+            const update = {
+                dataset_1h: h1.slice(slice),
+                dataset_4h: h4.slice(slice),
+                dataset_1d: d1.slice(slice),
+                dataset_1w: w1.slice(slice),
+                updatedAt: Date.now()
+            };
             await assets_1.default.updateOne({ _id: x._id }, update);
             customConsoleLog(`${x.name}`);
         }
@@ -52,5 +59,4 @@ const collect = async () => {
 //Run only when this file is executed directly
 if (require.main === module)
     collect().catch(console.error);
-const minutes = 60_000 * 5;
 exports.default = () => setInterval(() => collect(), minutes);

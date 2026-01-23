@@ -20,6 +20,8 @@ const customConsoleLog = (message: string, color="green") => {
   console.log(Color[color as TColor], message);
 };
 
+const minutes = 60_000 * 10;
+
 const collect = async () => {
   console.time("collect");
 
@@ -28,22 +30,28 @@ const collect = async () => {
   type TApiKey = keyof typeof apis;
   customConsoleLog(`TOTAL ASSETS: ${assets.length}`);
   await Promise.all(
-    assets.map( async (x) => {
-        if(!x.api) return;
-        try {
-          const [h1, h4, d1, w1] = await Promise.all([
-            apis[x.api as TApiKey](x.ticker, "1h"),
-            apis[x.api as TApiKey](x.ticker, "4h"),
-            apis[x.api as TApiKey](x.ticker, "1d"),
-            apis[x.api as TApiKey](x.ticker, "1w"),
-          ]);
-          const slice = -100;
-          const update = { dataset_1h: h1.slice(slice), dataset_4h: h4.slice(slice), dataset_1d: d1.slice(slice), dataset_1w: w1.slice(slice) }
-          await Assets.updateOne({_id: x._id}, update);
-          customConsoleLog(`${x.name}`)
-        } catch(err: any){
-          customConsoleLog(`FAILED ${x.name}`, "red");
-        }
+    assets.filter(el => (el.updatedAt + minutes) < Date.now()).map( async (x) => {
+      if(!x.api) return;
+      try {
+        const [h1, h4, d1, w1] = await Promise.all([
+          apis[x.api as TApiKey](x.ticker, "1h"),
+          apis[x.api as TApiKey](x.ticker, "4h"),
+          apis[x.api as TApiKey](x.ticker, "1d"),
+          apis[x.api as TApiKey](x.ticker, "1w"),
+        ]);
+        const slice = -100;
+        const update = { 
+          dataset_1h: h1.slice(slice), 
+          dataset_4h: h4.slice(slice), 
+          dataset_1d: d1.slice(slice), 
+          dataset_1w: w1.slice(slice), 
+          updatedAt: Date.now()
+        };
+        await Assets.updateOne({_id: x._id}, update);
+        customConsoleLog(`${x.name}`)
+      } catch(err: any){
+        customConsoleLog(`FAILED ${x.name}`, "red");
+      }
     })
   );
   customConsoleLog("ASSET UPDATED COMPLETED");
@@ -52,7 +60,5 @@ const collect = async () => {
 
 //Run only when this file is executed directly
 if (require.main === module) collect().catch(console.error);
-
-const minutes = 60_000 * 5;
 
 export default () => setInterval(() => collect(), minutes);

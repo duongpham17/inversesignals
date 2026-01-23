@@ -16,6 +16,7 @@ export interface IAssets {
   dataset_4h: TAssetDataset;
   dataset_1d: TAssetDataset;
   dataset_1w: TAssetDataset;
+  updatedAt: number,
   createdAt: number;
 };
 
@@ -68,6 +69,10 @@ const AssetsSchema = new Schema<IAssetsDocument>({
   dataset_1w: {
     type: [[Number]],
     default: [],
+  },
+  updatedAt: {
+    type: Number,
+    default: () => Date.now()
   },
   createdAt: {
     type: Number,
