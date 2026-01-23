@@ -21,7 +21,7 @@ const Hyperliquid = () => {
   
   const { open } = useAppSelector(state => state.trades);
   
-  const [ options, setOptions ] = useState("orderbook");
+  const [ options, setOptions ] = useState("performance");
 
   const candles = useHyperliquidKlines(symbol!, timeseries, limits);
 
@@ -61,6 +61,7 @@ const Hyperliquid = () => {
       <>
         <Container>
           <Flex>
+            <Button onClick={() => setOptions("performance")}><Text color={options==="performance" ? "primary" : "default"}>Performance</Text></Button>
             <Button onClick={() => setOptions("orderbook")}><Text color={options==="orderbook" ? "primary" : "default"}>Orderbook</Text></Button>
             <Button onClick={() => setOptions("indicators")}><Text color={options==="indicators" ? "primary" : "default"}>Indicators</Text></Button>
           </Flex>
