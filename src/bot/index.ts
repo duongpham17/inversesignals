@@ -20,7 +20,7 @@ const customConsoleLog = (message: string, color="green") => {
   console.log(Color[color as TColor], message);
 };
 
-const minutes = 60_000 * 10;
+const [minutes, delay] = [60_000 * 1, 60_000 * 5];
 
 const collect = async () => {
   console.time("collect");
@@ -30,7 +30,7 @@ const collect = async () => {
   type TApiKey = keyof typeof apis;
   customConsoleLog(`TOTAL ASSETS: ${assets.length}`);
   await Promise.all(
-    assets.filter(el => (el.updatedAt + minutes) < Date.now()).map( async (x) => {
+    assets.filter(el => (el.updatedAt + (minutes + delay)) < Date.now()).map( async (x) => {
       if(!x.api) return;
       try {
         const [h1, h4, d1, w1] = await Promise.all([

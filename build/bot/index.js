@@ -22,13 +22,13 @@ const customConsoleLog = (message, color = "green") => {
     console.log("-------------------------------------------------------");
     console.log(Color[color], message);
 };
-const minutes = 60_000 * 10;
+const [minutes, delay] = [60_000 * 1, 60_000 * 5];
 const collect = async () => {
     console.time("collect");
     await database();
     const assets = await assets_1.default.find().lean();
     customConsoleLog(`TOTAL ASSETS: ${assets.length}`);
-    await Promise.all(assets.filter(el => (el.updatedAt + minutes) < Date.now()).map(async (x) => {
+    await Promise.all(assets.filter(el => (el.updatedAt + (minutes + delay)) < Date.now()).map(async (x) => {
         if (!x.api)
             return;
         try {
