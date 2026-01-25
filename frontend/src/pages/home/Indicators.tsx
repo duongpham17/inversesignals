@@ -9,6 +9,7 @@ import Container from '@components/containers/Style3';
 import TextIndent from '@components/texts/Style2';
 import Text from '@components/texts/Style1';
 import Between from '@components/flex/Between';
+import Flex from '@components/flex/Flex';
 import Wrap from '@components/flex/Wrap';
 import Button from '@components/buttons/Style1';
 import Hover from '@components/hover/Style1';
@@ -30,6 +31,7 @@ const Pchigh = () => {
     return assets.map(x => {
       const ts = x[datasetTimeseries()];
       return {
+        latest: ts.slice(-1)[0][1] ,
         ticker: x.ticker,
         updatedAt: x.updatedAt,
         rsi: sort.indicator === "rsi" ? Number(rsi(ts).slice(-1)[0].rsi.toFixed(0)) : 0,
@@ -65,20 +67,20 @@ const Pchigh = () => {
         )}
       </Wrap>
 
-      {data_sorted?.map(el => {
-        const isUpdated = el.updatedAt + (60_000 * 5) > Date.now() ? true : false
-        return (
-          <Container key={el.ticker}>
-            <Between>
-              <Hover message={isUpdated ? "Updated" : `${formatDate(el.updatedAt)}`}><Link to={`/asset?symbol=${el.ticker}`}><Text color={isUpdated ? "default" : "red"}>{el.ticker}</Text></Link></Hover>
-              {sort.indicator === "rsi" &&<TextIndent color={el.rsi > 75 ? "green" : el.rsi < 25 ? "red" : "default"}>{el.rsi}</TextIndent>}
-              {sort.indicator === "roi" && <TextIndent color={el.roi > 0 ? "green" : "red"}>{el.roi}</TextIndent>}
-              {sort.indicator === "pchigh" && <TextIndent color={el.pchigh > 75 ? "green" : el.pchigh < 25 ? "red" : "default"}>{el.pchigh}</TextIndent>}
-              {sort.indicator === "escalation" && <TextIndent color={el.escalation > 0 ? "green" : "red"}>{el.escalation}</TextIndent>}
-              {sort.indicator === "cvolatility" && <TextIndent>{el.cvolatility}</TextIndent>}
-            </Between>
-        </Container>
-        )}
+      {data_sorted?.map(el => 
+        <Container key={el.ticker}>
+          <Between>
+            <Flex>
+              <Hover message={formatDate(el.updatedAt)}><Link to={`/asset?symbol=${el.ticker}`}><Text>{el.ticker}</Text></Link></Hover>
+              <Text color="light">${el.latest}</Text>
+            </Flex>
+            {sort.indicator === "rsi" &&<TextIndent color={el.rsi > 75 ? "green" : el.rsi < 25 ? "red" : "default"}>{el.rsi}</TextIndent>}
+            {sort.indicator === "roi" && <TextIndent color={el.roi > 0 ? "green" : "red"}>{el.roi}</TextIndent>}
+            {sort.indicator === "pchigh" && <TextIndent color={el.pchigh > 75 ? "green" : el.pchigh < 25 ? "red" : "default"}>{el.pchigh}</TextIndent>}
+            {sort.indicator === "escalation" && <TextIndent color={el.escalation > 0 ? "green" : "red"}>{el.escalation}</TextIndent>}
+            {sort.indicator === "cvolatility" && <TextIndent>{el.cvolatility}</TextIndent>}
+          </Between>
+      </Container>
       )}
 
     </>

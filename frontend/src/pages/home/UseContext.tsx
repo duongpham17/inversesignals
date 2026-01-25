@@ -54,7 +54,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
 
     useEffect(() => {
         if(!assets) dispatch(Asset.find());
-        const minutes = 60000 * 5 
+        const minutes = 60_000 * 1
         const intervalId = setInterval(() => dispatch(Asset.find()), minutes);
         return () => clearInterval(intervalId);
     }, [dispatch, assets]);

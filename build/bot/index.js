@@ -22,7 +22,7 @@ const customConsoleLog = (message, color = "green") => {
     console.log("-------------------------------------------------------");
     console.log(Color[color], message);
 };
-const [minutes, delay] = [60_000 * 5, 60_000 * 10];
+const [minutes, delay] = [60_000 * 1, 60_000 * 5];
 const collect = async () => {
     console.time("collecting");
     await database();
