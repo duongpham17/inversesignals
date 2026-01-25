@@ -20,18 +20,26 @@ const customConsoleLog = (message: string, color="green") => {
   console.log(Color[color as TColor], message);
 };
 
-const [minutes, delay] = [60_000 * 1, 60_000 * 5];
+const [minutes, delay] = [60_000 * 5, 60_000 * 10];
 
 const collect = async () => {
-  console.time("collect");
+  console.time("collecting");
 
   await database();
-  const assets = await Assets.find().lean();
+
+  const threshold = Date.now() - (minutes + delay);
+
+  const assets = await Assets.find({
+    updatedAt: { $lt: threshold },
+    api: { $exists: true }
+  }).lean();
+
   type TApiKey = keyof typeof apis;
+
   customConsoleLog(`TOTAL ASSETS: ${assets.length}`);
+
   await Promise.all(
-    assets.filter(el => (el.updatedAt + (minutes + delay)) < Date.now()).map( async (x) => {
-      if(!x.api) return;
+    assets.map(async (x) => {
       try {
         const [h1, h4, d1, w1] = await Promise.all([
           apis[x.api as TApiKey](x.ticker, "1h"),
@@ -39,23 +47,25 @@ const collect = async () => {
           apis[x.api as TApiKey](x.ticker, "1d"),
           apis[x.api as TApiKey](x.ticker, "1w"),
         ]);
-        const slice = -100;
-        const update = { 
-          dataset_1h: h1.slice(slice), 
-          dataset_4h: h4.slice(slice), 
-          dataset_1d: d1.slice(slice), 
-          dataset_1w: w1.slice(slice), 
+
+        const update = {
+          dataset_1h: h1.slice(-100),
+          dataset_4h: h4.slice(-100),
+          dataset_1d: d1.slice(-100),
+          dataset_1w: w1.slice(-100),
           updatedAt: Date.now()
         };
-        await Assets.updateOne({_id: x._id}, update);
-        customConsoleLog(`${x.name}`)
-      } catch(err: any){
+
+        await Assets.updateOne({ _id: x._id }, update);
+        customConsoleLog(x.name);
+      } catch {
         customConsoleLog(`FAILED ${x.name}`, "red");
       }
     })
   );
+
   customConsoleLog("ASSET UPDATED COMPLETED");
-  console.timeEnd("collect");
+  console.timeEnd("collecting");
 };
 
 //Run only when this file is executed directly

@@ -3,7 +3,8 @@ import { Context } from './UseContext';
 import { useAppSelector } from '@redux/hooks/useRedux';
 import { calculate_trade_metrics } from '@utils/forumlas';
 import { formatNumbersToString } from '@utils/functions';
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdDataset , MdOutlineStackedLineChart } from "react-icons/md";
+import { FaBitcoin } from "react-icons/fa";
 import Text from '@components/texts/Style2';
 import Between from '@components/flex/Between';
 import Flex from '@components/flex/Flex';
@@ -13,7 +14,7 @@ import Hover from '@components/hover/Style1';
 
 const History = () => {
 
-    const {page, onPage} = useContext(Context);
+    const {page, onPage, setOpen} = useContext(Context);
 
     const {trades} = useAppSelector(state => state.trades);
 
@@ -49,12 +50,13 @@ const History = () => {
         <>
             <Between>
                 <Flex>
-                    <Icon onClick={() => onPage(-1)}><MdKeyboardArrowLeft/></Icon>
-                    <Icon onClick={() => onPage(1)}><MdKeyboardArrowRight/></Icon>
-                    <Hover message={`${trades?.length}`}><Text>{page === 1 && "History"} {page === 2 && "Indicators"} {page === 3 && "Tickers"}</Text></Hover>
-                    <Hover message="Volume"><Text>${formatNumbersToString(stats.volume)}</Text></Hover>
+                    <Hover message="Tickers"><Icon onClick={() => setOpen(state => state === "tickers" ? "" : "tickers")}><FaBitcoin/></Icon></Hover>
+                    {page === 1 && <Hover message="History"><Icon onClick={() => onPage(1)}><MdDataset /></Icon></Hover>}
+                    {page === 2 && <Hover message="Analysis"><Icon onClick={() => onPage(-1)}><MdOutlineStackedLineChart/></Icon></Hover>}
+                    <Hover message={`[ ${trades?.length} ]`}><Text>{page === 1 && "History"} {page === 2 && "Analysis"}</Text></Hover>
                 </Flex>
                 <Flex>
+                     <Hover message="Volume"><Text>${formatNumbersToString(stats.volume)}</Text></Hover>
                     <Hover message={`[ P:${stats.profit_count} $${stats.avg_profit?.toFixed(0)}, L:${stats.loss_count} $${stats.avg_loss?.toFixed(0)} ]`}><Text>{stats.winrate?.toFixed(2)} %</Text></Hover>
                     <Hover message="PNL"><Text color={stats.total > 0 ?"green" : "red"}>${formatNumbersToString(stats.total)}</Text></Hover>
                 </Flex>

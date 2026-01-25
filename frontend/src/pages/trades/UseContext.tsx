@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useMemo } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@redux/hooks/useRedux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Trade from '@redux/actions/trades';
@@ -6,12 +6,16 @@ import Trade from '@redux/actions/trades';
 export interface PropsTypes {
     page: number,
     onPage: (side: 1 | -1) => void,
+    open: "" | "tickers",
+    setOpen: React.Dispatch<React.SetStateAction<"" | "tickers">>
 };
 
 // for consuming in children components, initial return state
 export const Context = createContext<PropsTypes>({
     page: 1,
     onPage: (side) => {},
+    open: "",
+    setOpen: () => {}
 });
 
 const UseContextHome = ({children}: {children: React.ReactNode}) => {
@@ -20,13 +24,15 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
 
     const { trades } = useAppSelector(state => state.trades);
 
+    const [ open, setOpen ] = useState<"" | "tickers">("");
+
     const page = useMemo(() => {
         const param = new URLSearchParams(location.search).get("page");
         return Number(param) || 1;
     }, [location.search]);
 
     const onPage = (side: -1 | 1) => {
-        const maxPage = 3;
+        const maxPage = 2;
         const next = page + side;
         if (next < 1 || next > maxPage) return;
 
@@ -44,7 +50,8 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
     }, [trades, dispatch]);
 
     const value = {
-        page, onPage
+        page, onPage,
+        open, setOpen
     };
 
     return (

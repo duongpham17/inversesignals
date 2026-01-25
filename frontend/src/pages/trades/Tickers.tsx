@@ -3,6 +3,7 @@ import { useAppSelector } from '@redux/hooks/useRedux';
 import { Link } from 'react-router-dom';
 import Wrap from '@components/flex/Wrap';
 import Button from '@components/buttons/Style1';
+import Container from '@components/containers/Style3';
 
 const Symbols = () => {
 
@@ -15,13 +16,15 @@ const Symbols = () => {
   }, [trades]);
 
   return (
-    <Wrap>
-      {data?.map(el => 
-        <Button key={el} color="dark">
-          <Link to={`/asset?symbol=${el}`}>{el}</Link>
-        </Button>
-      )}
-    </Wrap>
+    <Container>
+      <Wrap>
+        {data?.map(el => 
+          <Button key={el} color="dark">
+            <Link to={`/asset?symbol=${el}`}>{el}</Link>
+          </Button>
+        )}
+      </Wrap>
+    </Container>
   )
 }
 

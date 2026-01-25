@@ -1,8 +1,9 @@
 import { useMemo, useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Context } from './UseContext';
 import { useAppSelector } from '@redux/hooks/useRedux';
-import { Link } from 'react-router-dom';
 import { rsi, roi, percentage_from_high, composite_volatility, escalation } from '@utils/forumlas';
+import { formatDate } from '@utils/functions';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import Container from '@components/containers/Style3';
 import TextIndent from '@components/texts/Style2';
@@ -10,6 +11,7 @@ import Text from '@components/texts/Style1';
 import Between from '@components/flex/Between';
 import Wrap from '@components/flex/Wrap';
 import Button from '@components/buttons/Style1';
+import Hover from '@components/hover/Style1';
 
 const Pchigh = () => {
 
@@ -29,6 +31,7 @@ const Pchigh = () => {
       const ts = x[datasetTimeseries()];
       return {
         ticker: x.ticker,
+        updatedAt: x.updatedAt,
         rsi: sort.indicator === "rsi" ? Number(rsi(ts).slice(-1)[0].rsi.toFixed(0)) : 0,
         roi: sort.indicator === "roi" ? Number(roi(ts).slice(-1)[0].roi.toFixed(2)) : 0,
         pchigh: sort.indicator === "pchigh" ? Number(percentage_from_high(ts).slice(-1)[0].pchigh.toFixed(0)) : 0,
@@ -62,17 +65,20 @@ const Pchigh = () => {
         )}
       </Wrap>
 
-      {data_sorted?.map(el =>
-        <Container key={el.ticker}>
-          <Between>
-            <Link to={`/asset?symbol=${el.ticker}`}><Text>{el.ticker}</Text></Link>
-            {sort.indicator === "rsi" &&<TextIndent color={el.rsi > 75 ? "green" : el.rsi < 25 ? "red" : "default"}>{el.rsi}</TextIndent>}
-            {sort.indicator === "roi" && <TextIndent color={el.roi > 0 ? "green" : "red"}>{el.roi}</TextIndent>}
-            {sort.indicator === "pchigh" && <TextIndent color={el.pchigh > 75 ? "green" : el.pchigh < 25 ? "red" : "default"}>{el.pchigh}</TextIndent>}
-            {sort.indicator === "escalation" && <TextIndent color={el.escalation > 0 ? "green" : "red"}>{el.escalation}</TextIndent>}
-            {sort.indicator === "cvolatility" && <TextIndent>{el.cvolatility}</TextIndent>}
-          </Between>
+      {data_sorted?.map(el => {
+        const isUpdated = el.updatedAt + (60_000 * 5) > Date.now() ? true : false
+        return (
+          <Container key={el.ticker}>
+            <Between>
+              <Hover message={isUpdated ? "Updated" : `${formatDate(el.updatedAt)}`}><Link to={`/asset?symbol=${el.ticker}`}><Text color={isUpdated ? "default" : "red"}>{el.ticker}</Text></Link></Hover>
+              {sort.indicator === "rsi" &&<TextIndent color={el.rsi > 75 ? "green" : el.rsi < 25 ? "red" : "default"}>{el.rsi}</TextIndent>}
+              {sort.indicator === "roi" && <TextIndent color={el.roi > 0 ? "green" : "red"}>{el.roi}</TextIndent>}
+              {sort.indicator === "pchigh" && <TextIndent color={el.pchigh > 75 ? "green" : el.pchigh < 25 ? "red" : "default"}>{el.pchigh}</TextIndent>}
+              {sort.indicator === "escalation" && <TextIndent color={el.escalation > 0 ? "green" : "red"}>{el.escalation}</TextIndent>}
+              {sort.indicator === "cvolatility" && <TextIndent>{el.cvolatility}</TextIndent>}
+            </Between>
         </Container>
+        )}
       )}
 
     </>

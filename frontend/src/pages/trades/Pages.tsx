@@ -7,13 +7,13 @@ import Tickers from './Tickers';
 
 const Pages = () => {
 
-    const {page} = useContext(Context);
+    const {page, open} = useContext(Context);
 
     return (
         <>
-            {page === 1 && <History />}
-            {page === 2 && <Analysis />}
-            {page === 3 && <Tickers />}
+            {open === "tickers" && <Tickers/>}
+            {page === 1 && <History/>}
+            {page === 2 && <Analysis/>}
         </>
     )
 }

@@ -16,7 +16,8 @@ export interface IAssets {
     dataset_4h: TAssetsDataset[],
     dataset_1d: TAssetsDataset[],
     dataset_1w: TAssetsDataset[],
-    createdAt: number
+    updatedAt: number
+    createdAt: number,
 };
 
 export type TDatasetTimeseries = "dataset_1h" | "dataset_4h" | "dataset_1d" | "dataset_1w";
