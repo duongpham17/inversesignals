@@ -16,6 +16,7 @@ import Input from '@components/inputs/Style2';
 import Options from '@components/options/Style3';
 import Button from '@components/buttons/Style1';
 import Hover from '@components/hover/Style1';
+import Pagination from '@components/paginations/Style1';
 
 interface Props {
     data: ITrades,
@@ -110,21 +111,21 @@ const History = () => {
                 )
             })}
 
-            {data?.close_trades.map(el => {
-                const metrics = calculate_trade_metrics(el.close_klines[1], el.open_klines[1], el.side, el.size, el.leverage);
-                return (
+            {data?.open_trades && 
+                <Pagination data={data.close_trades} limit={10}>
+                    {(data) => data.map(el => {
+                    const metrics = calculate_trade_metrics(el.close_klines[1], el.open_klines[1], el.side, el.size, el.leverage);
+                    return (
                     <Container key={el._id} onClick={() => setEdit(el)}>
                         <Between>
-                            <Hover message="Open Date"><Text color="light">{formatDate(el.open_klines[0])}</Text></Hover>
-                            <Hover message="Close Date"><Text color="light">{formatDate(el.close_klines[0])}</Text></Hover>
-                            <Text color="light">{dateDifference(el.open_klines[0], el.close_klines[0]).string}</Text>
+                            <Hover message="Open Date, Close Date"><Text color="light">{formatDate(el.open_klines[0])} | {formatDate(el.close_klines[0])}</Text></Hover>
+                            <Hover message="Hold Time"> <Text color="light">{dateDifference(el.open_klines[0], el.close_klines[0]).string}</Text></Hover>
                         </Between>
                         <Between>
                             <Link to={`/asset?symbol=${el.ticker}`}><Text>{el.ticker} {el.side.toUpperCase()} {el.leverage}x</Text></Link>
                             <Flex>
-                                <Hover message="Fees"><Text>( -${el.fees} )</Text></Hover>
                                 <Hover message="Roi"><Text>{((metrics.roi) * 10).toFixed(2)}%</Text></Hover>
-                                <Hover message="PNL - Fees"><Text color={metrics.pnl > 0 ? "green" : "red"}>${formatNumbersToString(metrics.pnl - el.fees)}</Text></Hover>
+                                <Hover message={`${metrics.pnl.toFixed(2)}) - ${el.fees.toFixed(0)}`}><Text color={metrics.pnl > 0 ? "green" : "red"}>${(metrics.pnl - el.fees).toFixed(2)}</Text></Hover>
                             </Flex>
                         </Between>
                         <Between>
@@ -133,7 +134,9 @@ const History = () => {
                         </Between>
                     </Container>
                 )
-            })}
+                })}
+                </Pagination>
+            }
 
             {edit && <Edit data={edit} setEdit={setEdit} />}
         </>
