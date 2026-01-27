@@ -7,7 +7,6 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config({ path: './config.env' });
 const mongoose_1 = __importDefault(require("mongoose"));
 const assets_1 = __importDefault(require("../models/assets"));
-const apis_1 = require("./apis");
 const _environment_1 = require("../@environment");
 const database = async () => {
     if (mongoose_1.default.connection.readyState === 1)
@@ -22,31 +21,14 @@ const customConsoleLog = (message, color = "green") => {
     console.log("-------------------------------------------------------");
     console.log(Color[color], message);
 };
-const [minutes, delay] = [60_000 * 1, 60_000 * 5];
-const collect = async () => {
-    console.time("COLLECTING");
+const custom = async () => {
+    console.time("UPDATE");
     await database();
-    const threshold = Date.now() - (minutes + delay);
-    const assets = await assets_1.default.find({
-        updatedAt: { $lt: threshold },
-        api: { $exists: true }
-    }).lean();
+    const assets = await assets_1.default.find();
     customConsoleLog(`TOTAL ASSETS: ${assets.length}`);
     await Promise.all(assets.map(async (x) => {
         try {
-            const [h1, h4, d1, w1] = await Promise.all([
-                apis_1.apis[x.api](x.ticker, "1h"),
-                apis_1.apis[x.api](x.ticker, "4h"),
-                apis_1.apis[x.api](x.ticker, "1d"),
-                apis_1.apis[x.api](x.ticker, "1w"),
-            ]);
-            const update = {
-                dataset_1h: h1.slice(-100),
-                dataset_4h: h4.slice(-100),
-                dataset_1d: d1.slice(-100),
-                dataset_1w: w1.slice(-100),
-                updatedAt: Date.now()
-            };
+            const update = {};
             await assets_1.default.updateOne({ _id: x._id }, update);
             customConsoleLog(x.name);
         }
@@ -54,10 +36,9 @@ const collect = async () => {
             customConsoleLog(`FAILED ${x.name}`, "red");
         }
     }));
-    customConsoleLog("ASSET UPDATED COMPLETED");
-    console.timeEnd("COLLECTING");
+    customConsoleLog("ASSETS UPDATED COMPLETED");
+    console.timeEnd("UPDATE");
 };
 //Run only when this file is executed directly
 if (require.main === module)
-    collect().catch(console.error);
-exports.default = () => setInterval(() => collect(), minutes);
+    custom().catch(console.error);

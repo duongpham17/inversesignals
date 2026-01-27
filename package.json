@@ -7,7 +7,8 @@
     "start": "node ./build/index.js",
     "dev": "nodemon ./src/index.ts",
     "build": "tsc -p .",
-    "collect": "ts-node ./src/bot/index.ts"
+    "collect": "ts-node ./src/bot/index.ts",
+    "custom": "ts-node ./src/bot/custom.ts"
   },
   "keywords": [
     "bot"

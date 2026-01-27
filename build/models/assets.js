@@ -84,7 +84,7 @@ const AssetsSchema = new mongoose_1.Schema({
     },
     updatedAt: {
         type: Number,
-        default: () => Date.now()
+        default: () => Date.now() - (60_000 * 10)
     },
     createdAt: {
         type: Number,

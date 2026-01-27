@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './config.env'});
 import mongoose from 'mongoose';
 import Assets from '../models/assets';
-import { apis } from './apis';
 import { mongodb } from '../@environment';
 
 const database = async () => {
@@ -20,42 +19,19 @@ const customConsoleLog = (message: string, color="green") => {
   console.log(Color[color as TColor], message);
 };
 
-const [minutes, delay] = [60_000 * 1, 60_000 * 5];
-
-const collect = async () => {
-  console.time("COLLECTING");
+const custom = async () => {
+  console.time("UPDATE");
 
   await database();
 
-  const threshold = Date.now() - (minutes + delay);
-
-  const assets = await Assets.find({
-    updatedAt: { $lt: threshold },
-    api: { $exists: true }
-  }).lean();
-
-  type TApiKey = keyof typeof apis;
+  const assets = await Assets.find()
 
   customConsoleLog(`TOTAL ASSETS: ${assets.length}`);
 
   await Promise.all(
     assets.map(async (x) => {
       try {
-        const [h1, h4, d1, w1] = await Promise.all([
-          apis[x.api as TApiKey](x.ticker, "1h"),
-          apis[x.api as TApiKey](x.ticker, "4h"),
-          apis[x.api as TApiKey](x.ticker, "1d"),
-          apis[x.api as TApiKey](x.ticker, "1w"),
-        ]);
-
-        const update = {
-          dataset_1h: h1.slice(-100),
-          dataset_4h: h4.slice(-100),
-          dataset_1d: d1.slice(-100),
-          dataset_1w: w1.slice(-100),
-          updatedAt: Date.now()
-        };
-
+        const update = {};
         await Assets.updateOne({ _id: x._id }, update);
         customConsoleLog(x.name);
       } catch {
@@ -64,11 +40,9 @@ const collect = async () => {
     })
   );
 
-  customConsoleLog("ASSET UPDATED COMPLETED");
-  console.timeEnd("COLLECTING");
+  customConsoleLog("ASSETS UPDATED COMPLETED");
+   console.timeEnd("UPDATE");
 };
 
 //Run only when this file is executed directly
-if (require.main === module) collect().catch(console.error);
-
-export default () => setInterval(() => collect(), minutes);
+if (require.main === module) custom().catch(console.error);

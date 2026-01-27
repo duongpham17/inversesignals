@@ -5,7 +5,6 @@ export type TAssetsDataset = number[];
 export interface IAssets {
     _id: string,
     name: string,
-    keywords: string,
     api: string,
     ticker: string,
     class: string,

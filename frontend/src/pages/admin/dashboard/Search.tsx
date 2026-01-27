@@ -35,7 +35,6 @@ const Binance = () => {
                 ticker: name, 
                 api: "binance", 
                 class: "crypto",
-                keywords: "technology crypto uncertainty",
                 xtype: "candle",
                 xlabel: "close_time, close, volume, open, high, low, open_time, quote_asset_volume",
             }));

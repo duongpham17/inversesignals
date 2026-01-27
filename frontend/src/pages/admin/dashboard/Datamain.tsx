@@ -15,7 +15,7 @@ import Form from '@components/forms/Style1';
 import Button from '@components/buttons/Style1';
 import ButtonPlain from '@components/buttons/Style3';
 import Text from '@components/texts/Style1';
-import TextIndent from '@components/texts/Style2';
+import Line from '@components/line/Style1';
 import Hover from '@components/hover/Style1';
 import Input from '@components/inputs/Style1';
 import Options from '@components/options/Style1';
@@ -68,11 +68,7 @@ const Datamain = ({asset}: {asset: IAssets}) => {
         </Flex>
       </Between>
 
-      <Container color="dark">
-        <Hover message="Keywords" onClick={onOpen}>
-          <TextIndent>{asset.keywords}</TextIndent>
-        </Hover>
-      </Container>
+      <Line color="primary" />
 
       <Cover open={open} onClose={onOpen}>
         <Form onSubmit={onSubmit}>
@@ -119,12 +115,6 @@ const Datamain = ({asset}: {asset: IAssets}) => {
               />
             </Flex>
             <Input
-              label1="Keywords"
-              name="keywords"
-              value={values.keywords || ""}
-              onChange={onChange}
-            />
-            <Input
               label1="X Type"
               name="xtype"
               value={values.xtype || ""}
@@ -139,7 +129,7 @@ const Datamain = ({asset}: {asset: IAssets}) => {
             {edited && <Button type="submit" loading={loading} color="primary">UPDATE</Button>}
           </Container>
 
-          <ButtonPlain color="red" warning onClick={onDelete}>Delete Asset</ButtonPlain>
+          {!edited && <ButtonPlain color="red" warning onClick={onDelete}>Delete Asset</ButtonPlain>}
         </Form>
       </Cover>
       
