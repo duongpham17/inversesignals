@@ -1,4 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from "react-router-dom";
 import { Context } from '../UseContext';
 import { useHyperliquidKlines } from 'exchanges/hyperliquid';
 import { useAppSelector } from '@redux/hooks/useRedux';
@@ -25,9 +26,22 @@ const Hyperliquid = () => {
 
   const candles = useHyperliquidKlines(symbol!, timeseries, limits);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (!candles || candles.length === 0) {
+      const timeout = setTimeout(() => {
+        searchParams.set("page", "2");
+        setSearchParams(searchParams);
+      }, 5000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [candles, searchParams, setSearchParams]);
+
   useEffect(() => {
     if (!candles || candles.length === 0) return;
-
+  
     const lastCandle = candles[candles.length - 1];
     if (lastCandle) {
       setPrice(lastCandle[1]);

@@ -93,6 +93,7 @@ const UseContextAsset = ({children}: {children: React.ReactNode}) => {
 
     useEffect(() => {
         document.title = `${symbol} ${price.toString()}`;
+        console.log()
     }, [price, symbol])
 
     const chartViews = ["candle", "line"];
