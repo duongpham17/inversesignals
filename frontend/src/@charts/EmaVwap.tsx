@@ -19,8 +19,8 @@ const CustomToolTips = ({ active, payload, label }: {active?: any, payload: any,
         <h3 className={styles.close}>{label || "$"} {formatNumbersToString(data.close)}</h3>
         <p className={styles.vwap}><span>VWAP</span> <span>{formatNumbersToString(data.vwap)}</span></p>
         <p className={styles.ema5}><span>EMA 5</span> <span>{formatNumbersToString(data.ema5)}</span></p>
-        <p className={styles.ema20}><span>EMA 20</span><span>{formatNumbersToString(data.ema20)}</span></p>
-        <p className={styles.ema50}><span>EMA 50</span> <span>{formatNumbersToString(data.ema50)}</span></p>
+        <p className={styles.ema100}><span>EMA 100</span><span>{formatNumbersToString(data.ema100)}</span></p>
+        <p className={styles.ema200}><span>EMA 200</span> <span>{formatNumbersToString(data.ema100)}</span></p>
         { data.open === data.high ? <div></div> :
           <div>
             <p><span>OPEN </span><span>{formatNumbersToString(data.open)}</span></p>
@@ -41,8 +41,8 @@ const EmaChartComponent = ({ data, label="", sync, height=300}: Props) => {
 
     const EmaData = () => {
         const ema5 = ema(dataForEma, 5);
-        const ema20 = ema(dataForEma, 20);
-        const ema50 = ema(dataForEma, 50);
+        const ema100 = ema(dataForEma, 100);
+        const ema200 = ema(dataForEma, 200);
         const newData = [];
         for(const index in data){
             newData.push({
@@ -51,9 +51,9 @@ const EmaChartComponent = ({ data, label="", sync, height=300}: Props) => {
                 open: data[index][3],
                 high: data[index][4],
                 low: data[index][5],
-                ema5: (ema5[index].ema),
-                ema20: ema20[index].ema,
-                ema50: ema50[index].ema,
+                ema5: ema5[index].ema,
+                ema100: ema100[index].ema,
+                ema200: ema200[index].ema,
                 vwap: dataForVwap[index].vwap
             })
         };
@@ -68,8 +68,8 @@ const EmaChartComponent = ({ data, label="", sync, height=300}: Props) => {
             <YAxis dataKey={"close"} tickFormatter={(el) => formatNumbersToString(el)} domain={["auto", "auto"]} fontSize={12}/>
             <Area dataKey={"close"} opacity={1} strokeWidth={1.5} stroke={"var(--primary"} fill={"transparent"} />
             <Area dataKey={"ema5"} opacity={1} strokeWidth={1.5} stroke={"var(--green"} fill={"transparent"} />
-            <Area dataKey={"ema20"} opacity={1} strokeWidth={1.5} stroke={"var(--blue"} fill={"transparent"} />
-            <Area dataKey={"ema50"} opacity={1} strokeWidth={1.5} stroke={"var(--yellow"} fill={"transparent"} />
+            <Area dataKey={"ema100"} opacity={1} strokeWidth={1.5} stroke={"var(--blue"} fill={"transparent"} />
+            <Area dataKey={"ema200"} opacity={1} strokeWidth={1.5} stroke={"var(--yellow"} fill={"transparent"} />
             <Area dataKey={"vwap"} opacity={1} strokeWidth={1.5} stroke={"var(--primary-light"} fill={"transparent"} />
             <Tooltip content={content => CustomToolTips({...content, label})}/>
             </AreaChart>

@@ -76,8 +76,8 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleRef = useRef<any>(null);
-  const ema21Ref = useRef<any>(null);
-  const ema9Red = useRef<any>(null);
+  const ema100ref = useRef<any>(null);
+  const ema200ref = useRef<any>(null);
   const vwapRef = useRef<any>(null);
   const tradeLinesRef = useRef<any[]>([]); // store all trade lines
 
@@ -87,8 +87,8 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
     close: number;
     high: number;
     low: number;
-    ema9Red?: number;
-    ema21Ref?: number;
+    ema200ref?: number;
+    ema100ref?: number;
     vwap?: number;
   }>({ time: 0, open: 0, close: 0, high: 0, low: 0 });
 
@@ -120,8 +120,8 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
 
     // add series
     candleRef.current = chartRef.current.addSeries(CandlestickSeries, {priceFormat: {precision, minMove}});
-    ema21Ref.current = chartRef.current.addSeries(LineSeries, { color: '#ffff00', lineWidth: 2, priceLineVisible: false});
-    ema9Red.current = chartRef.current.addSeries(LineSeries, { color: '#2474f5', lineWidth: 2, priceLineVisible: false });
+    ema100ref.current = chartRef.current.addSeries(LineSeries, { color: '#2474f5', lineWidth: 2, priceLineVisible: false});
+    ema200ref.current = chartRef.current.addSeries(LineSeries, { color: '#ffff00', lineWidth: 2, priceLineVisible: false });
     vwapRef.current = chartRef.current.addSeries(LineSeries, { color: '#e684eaec', lineWidth: 2, priceLineVisible: false });
     
     // Add right-click reset
@@ -157,8 +157,8 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
     if (!candleRef.current) return;
 
     candleRef.current?.setData(candles);
-    ema21Ref.current?.setData(calculateEMA(candles, 21));
-    ema9Red.current?.setData(calculateEMA(candles, 9));
+    ema100ref.current?.setData(calculateEMA(candles, 100));
+    ema200ref.current?.setData(calculateEMA(candles, 200));
     vwapRef.current?.setData(calculateVWAP(candles));
 
     const latestPrice = candles[candles.length - 1]?.close;
@@ -186,8 +186,8 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
       const candle = param.seriesData.get(candleRef.current);
       if (!candle) return;
 
-      const ema9Value = param.seriesData.get(ema9Red.current)?.value;
-      const ema21Value = param.seriesData.get(ema21Ref.current)?.value;
+      const ema200value = param.seriesData.get(ema200ref.current)?.value;
+      const ema100Value = param.seriesData.get(ema100ref.current)?.value;
       const vwapValue = param.seriesData.get(vwapRef.current)?.value;
 
       setTooltip(prev => {
@@ -197,8 +197,8 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
           prev.high === candle.high &&
           prev.low === candle.low &&
           prev.close === candle.close &&
-          prev.ema9Red === ema9Value &&
-          prev.ema21Ref === ema21Value &&
+          prev.ema200ref === ema200value &&
+          prev.ema100ref === ema100Value &&
           prev.vwap === vwapValue
         ) {
           return prev;
@@ -209,8 +209,8 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
           close: candle.close,
           high: candle.high,
           low: candle.low,
-          ema9Red: ema9Value,
-          ema21Ref: ema21Value,
+          ema200ref: ema200value,
+          ema100ref: ema100Value,
           vwap: vwapValue,
         };
       });
@@ -258,8 +258,8 @@ const Candlestick: React.FC<Props> = ({ data, height=300, annotations=[], precis
         <p><span className={styles.light}>O:</span><span>{tooltip.open}</span> </p>
         <p><span className={styles.light}>H:</span><span>{tooltip.high}</span> </p>
         <p><span className={styles.light}>L:</span><span>{tooltip.low}</span> </p>
-        <span className={styles.ema9}>EMA9:{tooltip.ema9Red?.toFixed(4)}</span> 
-        <span className={styles.ema21}>EMA21:{tooltip.ema21Ref?.toFixed(4)}</span> 
+        <span className={styles.ema100}>EMA100:{tooltip.ema100ref?.toFixed(4)}</span> 
+        <span className={styles.ema200}>EMA200:{tooltip.ema200ref?.toFixed(4)}</span> 
         <span className={styles.vwap}>VWAP:{tooltip.vwap?.toFixed(4)}</span>
       </div>
       </div>
