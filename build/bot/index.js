@@ -48,7 +48,6 @@ const collect = async () => {
                 updatedAt: Date.now()
             };
             await assets_1.default.updateOne({ _id: x._id }, update);
-            customConsoleLog(x.name);
         }
         catch {
             customConsoleLog(`FAILED ${x.name}`, "red");

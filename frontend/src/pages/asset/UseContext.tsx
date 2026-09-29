@@ -3,8 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 export interface PropsTypes {
     symbol: string | null,
-    page: number,
-    setPage: (side: 1 | -1) => void,
+    supply: string | null,
+    market: string | null,
+    exchange: string,
+    setExchange: (exchange: string) => void,
     timeseries_set: string[],
     timeseries: string,
     setTimeseries: (x: string) => void,
@@ -22,8 +24,10 @@ export interface PropsTypes {
 // for consuming in children components, initial return state
 export const Context = createContext<PropsTypes>({
     symbol: "",
-    page: 1,
-    setPage: () => {},
+    supply: "",
+    exchange: "",
+    market: "",
+    setExchange: () => {},
     timeseries_set: [],
     timeseries: "1h",
     setTimeseries: () => "",
@@ -38,10 +42,11 @@ export const Context = createContext<PropsTypes>({
     setOpenItem: () => "",
 });
 
-const UseContextAsset = ({children}: {children: React.ReactNode}) => {
+const UseContextCrypto = ({children}: {children: React.ReactNode}) => {
 
     const [ location, navigate ] = [ useLocation(), useNavigate() ];
-    const [ symbol ] = [new URLSearchParams(location.search).get('symbol')];
+    const query = new URLSearchParams(location.search)
+    const [ symbol, supply, market ] = [query.get("symbol"), query.get("supply"), query.get("market")];
     const [ price, setPrice ] = useState<number>(0);
     const [ viewChart, setViewChart ] = useState<string>("candle");
     const [ openItem, setOpenItem ] = useState<string>("");
@@ -72,19 +77,14 @@ const UseContextAsset = ({children}: {children: React.ReactNode}) => {
         navigate(`?${params.toString()}`);
     };
 
-    const page = useMemo(() => {
-        const param = new URLSearchParams(location.search).get("page");
-        return Number(param) || 1;
+    const exchange = useMemo(() => {
+        const param = new URLSearchParams(location.search).get("exchange");
+        return param || "binance"
     }, [location.search]);
 
-    const setPage = (side: -1 | 1) => {
-        const maxPage = 2;
-        const next = page + side;
-        if (next < 1 || next > maxPage) return;
-
+    const setExchange = (exchange: string) => {
         const params = new URLSearchParams(location.search);
-        params.set("page", String(next));
-
+        params.set("exchange", exchange);
         navigate({
             pathname: location.pathname,
             search: params.toString(),
@@ -93,7 +93,6 @@ const UseContextAsset = ({children}: {children: React.ReactNode}) => {
 
     useEffect(() => {
         document.title = `${symbol} ${price.toString()}`;
-        console.log()
     }, [price, symbol])
 
     const chartViews = ["candle", "line"];
@@ -103,11 +102,11 @@ const UseContextAsset = ({children}: {children: React.ReactNode}) => {
     };
 
     const value = {
-        symbol,
+        symbol, supply, market,
         price, setPrice,
         timeseries_set, timeseries, setTimeseries,
         limits_set, limits, setLimits, 
-        page, setPage,
+        exchange, setExchange,
         viewChart, onViewChart,
         openItem, setOpenItem
     };
@@ -119,4 +118,4 @@ const UseContextAsset = ({children}: {children: React.ReactNode}) => {
     );
 };
 
-export default UseContextAsset
+export default UseContextCrypto

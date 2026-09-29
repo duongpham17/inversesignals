@@ -12,7 +12,6 @@ import Wrap from '@components/flex/Wrap';
 import Text from '@components/texts/Style2';
 import Loader from '@components/loaders/Style1';
 import Between from '@components/flex/Between';
-import Hover from '@components/hover/Style1';
 
 const open_price = (asset: IAssets) => {
   return asset.dataset_1d.slice(-1)[0][3];
@@ -27,92 +26,6 @@ const latest_volume = (asset: IAssets) => {
 };
 
 const styles = { width1: "130px", width2: "110px" };
-
-const Crypto = ({assets}: {assets: IAssets[]}) => {
-
-  const mcap = assets.sort((a,b) => (latest_price(b) * b.supply) - (latest_price(a) * a.supply));
-
-  return (
-    <>
-    <Container>   
-      <Between>
-        <Text style={{width: styles.width1}}>NAME</Text>
-        <Text style={{width: styles.width2}}>PRICE</Text>
-        <Text style={{width: styles.width2}}>MCAP</Text>
-        <Text style={{width: styles.width2}}>ROI</Text>
-      </Between>
-    </Container>
-      {mcap.map((el, index) => {
-        const roi = percentage_change(latest_price(el), open_price(el))
-        return (
-          <Container key={el._id}>
-            <Link to={`/asset?symbol=${el.ticker}`}>
-              <Between key={el._id}>
-                <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
-                <Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text>
-                <Text style={{width: styles.width2}}>$ {formatNumbersToString((latest_price(el) * el.supply))}</Text>
-                <Text color={roi>0?"green":"red"} style={{width: styles.width2}}>{roi.toFixed(2)} %</Text>
-              </Between>
-            </Link>
-          </Container>
-        )
-      })}
-    </>
-  )
-};
-
-const Stock = ({assets}: {assets: IAssets[]}) => {
-  return (
-    <>
-      <Container>   
-        <Between>
-          <Text style={{width: styles.width1}}>NAME</Text>
-          <Text style={{width: styles.width2}}>ROI</Text>
-          <Text style={{width: styles.width2}}>PRICE</Text>
-          <Text style={{width: styles.width2}}>VOLUME</Text>
-        </Between>
-      </Container>
-      {assets.map((el, index) => {
-        const roi = percentage_change(latest_price(el), open_price(el))
-        return (
-          <Container key={el._id}>
-            <Link to={`/asset?id=${el.name}&symbol=${el.ticker}`}>
-              <Between key={el._id}>
-                <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
-                <Hover message="ROI"><Text color={roi>0?"green":"red"}>{roi.toFixed(2)} %</Text></Hover>
-                <Hover message="Price"><Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text></Hover>
-                <Hover message="Volume"><Text style={{width: styles.width2}}>$ {formatNumbersToString(latest_volume(el))}</Text></Hover>
-              </Between>
-            </Link>
-          </Container>
-        )
-      })}
-    </>
-  )
-};
-
-const SearchCrypto = ({assets}: {assets:IAssets[]}) => {
-
-  const createLink = (name: string) => {
-    const asset = assets.find(el => el.name === name);
-    if(!asset) return "";
-    return `/asset?id=${name}&symbol=${asset.ticker}`
-  };
-
-  return (
-    <Container>
-      <Search data={assets.map(el => el.name.toLowerCase())}>
-        {(results) => 
-          <Wrap>
-            { results.slice(0, 10).map((el) => 
-              <Link key={el} to={createLink(el)}><Button color="dark">{el}</Button></Link>
-            )}
-          </Wrap>
-        }
-      </Search>
-    </Container>
-  )
-};
 
 const AssetsComponent = () => {
 
@@ -133,6 +46,96 @@ const AssetsComponent = () => {
 
     </>
   )
-}
+};
+
+const Crypto = ({assets}: {assets: IAssets[]}) => {
+
+  const mcap = assets.sort((a,b) => (latest_price(b) * b.supply) - (latest_price(a) * a.supply));
+
+  return (
+    <>
+    <Container>   
+      <Between>
+        <Text style={{width: styles.width1}}>NAME</Text>
+        <Text style={{width: styles.width2}}>PRICE</Text>
+        <Text style={{width: styles.width2}}>MCAP</Text>
+        <Text style={{width: styles.width2}}>ROI</Text>
+      </Between>
+    </Container>
+      {mcap.map((el, index) => {
+        const roi = percentage_change(latest_price(el), open_price(el))
+        return (
+          <Container key={el._id}>
+            <Link to={`/asset?symbol=${el.ticker}&market=crypto&supply=${el.supply}`}>
+              <Between key={el._id}>
+                <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
+                <Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text>
+                <Text style={{width: styles.width2}}>$ {formatNumbersToString((latest_price(el) * el.supply))}</Text>
+                <Text color={roi>0?"green":"red"} style={{width: styles.width2}}>{roi.toFixed(2)} %</Text>
+              </Between>
+            </Link>
+          </Container>
+        )
+      })}
+    </>
+  )
+};
+
+const Stock = ({assets}: {assets: IAssets[]}) => {
+  const mcap = assets.sort((a,b) => (latest_price(b) * b.supply) - (latest_price(a) * a.supply));
+
+  return (
+    <>
+      <Container>   
+        <Between>
+          <Text style={{width: styles.width1}}>NAME</Text>
+          <Text style={{width: styles.width2}}>PRICE</Text>
+          <Text style={{width: styles.width2}}>MCAP</Text>
+          <Text style={{width: styles.width2}}>ROI</Text>
+          <Text style={{width: styles.width2}}>VOLUME</Text>
+        </Between>
+      </Container>
+      {mcap.map((el, index) => {
+        const roi = percentage_change(latest_price(el), open_price(el))
+        return (
+          <Container key={el._id}>
+            <Link to={`/asset?id=${el.name}&symbol=${el.ticker}&market=stock&supply=${el.supply}`}>
+              <Between key={el._id}>
+                <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
+                <Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text>
+                <Text style={{width: styles.width2}}>$ {formatNumbersToString((latest_price(el) * el.supply))}</Text>
+                <Text style={{width: styles.width2}} color={roi>0?"green":"red"}>{roi.toFixed(2)} %</Text>
+                <Text style={{width: styles.width2}}>{formatNumbersToString(latest_volume(el))}</Text>
+              </Between>
+            </Link>
+          </Container>
+        )
+      })}
+    </>
+  )
+};
+
+const SearchCrypto = ({assets}: {assets:IAssets[]}) => {
+
+  const createLink = (name: string) => {
+    const asset = assets.find(el => el.name === name);
+    if(!asset) return "";
+    return `/crypto?id=${name}&symbol=${asset.ticker}&market=crypto`
+  };
+
+  return (
+    <Container>
+      <Search data={assets.map(el => el.name.toLowerCase())}>
+        {(results) => 
+          <Wrap>
+            { results.slice(0, 10).map((el) => 
+              <Link key={el} to={createLink(el)}><Button color="dark">{el}</Button></Link>
+            )}
+          </Wrap>
+        }
+      </Search>
+    </Container>
+  )
+};
 
 export default AssetsComponent

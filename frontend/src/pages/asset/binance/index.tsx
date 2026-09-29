@@ -1,7 +1,6 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { Context } from '../UseContext';
-import { useLocation } from 'react-router-dom';
-import { klines as BinanceKlines, TBinanceKlines } from 'exchanges/binance';
+import { useBinanceKlines } from 'exchanges/binance';
 import { priceFormat } from '@utils/functions';
 import EmaVwapChart from '@charts/EmaVwap';
 import CandlestickChart from '@charts/Candlesticks';
@@ -9,46 +8,39 @@ import Indicators from './Indicators';
 
 const Binance = () => {
 
-  const [ location ] = [useLocation()];
-
   const { symbol, timeseries, limits, setPrice, viewChart } = useContext(Context);
 
-  const [ klines, setKlines ] = useState<TBinanceKlines>([]);
+  const candles = useBinanceKlines(symbol!,timeseries,limits);
 
   useEffect(() => {
-    if(!symbol) return;
-    let cancelled = false;
-    let timeoutId: NodeJS.Timeout;
-
-    const poll = async () => {
-      if (cancelled) return;
-      await fetchKlines();
-      timeoutId = setTimeout(poll, 5000);
-    };
-
-    const fetchKlines = async () => {
-      const klines = await BinanceKlines(symbol, timeseries);
-      if (!cancelled) {
-        setKlines(klines.slice(-limits));
-        setPrice(klines[klines.length - 1][1]);
-      }
-    };
-
-    poll();
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timeoutId);
-    };
-  }, [location.search, limits, timeseries, setPrice, symbol]);
+    if (!candles || candles.length === 0) return;
+  
+    const lastCandle = candles[candles.length - 1];
+    if (lastCandle) {
+      setPrice(lastCandle[1]);
+    }
+  }, [candles, setPrice]);
 
   return (
     <>
-      {viewChart === "candle" && klines.length && <CandlestickChart data={klines} height={300} precision={priceFormat(klines[0][1]).precision} minMove={priceFormat(klines[0][1]).minMove} />}
+      {viewChart === "candle" && candles.length > 0 && (
+        <CandlestickChart
+          data={candles}
+          height={300}
+          precision={priceFormat(candles[0][1]).precision}
+          minMove={priceFormat(candles[0][1]).minMove}
+        />
+      )}
 
-      {viewChart === "line" && <EmaVwapChart data={klines} height={300} sync="crypto" />}
+      {viewChart === "line" && candles.length > 0 && (
+        <EmaVwapChart
+          data={candles}
+          height={300}
+          sync="crypto"
+        />
+      )}
 
-      <Indicators klines={klines}/>
+      <Indicators klines={candles} />
     </>
   );
 };

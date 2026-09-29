@@ -18,7 +18,7 @@ const Pchigh = () => {
 
   const {assets} = useAppSelector(state => state.assets);
 
-  const {datasetTimeseries} = useContext(Context);
+  const {datasetTimeseries, assetClass} = useContext(Context);
 
   const indicators = ["rsi", "roi", "pchigh", "escalation", "cvolatility"] as const;
   type TSortIndicator = typeof indicators[number];
@@ -28,7 +28,7 @@ const Pchigh = () => {
   const data = useMemo(() => {
     if (!assets) return null;
 
-    return assets.map(x => {
+    return assets.filter(el => el.class === assetClass).map(x => {
       const ts = x[datasetTimeseries()];
       return {
         latest: ts.slice(-1)[0][1] ,
@@ -41,7 +41,7 @@ const Pchigh = () => {
         escalation: sort.indicator === "escalation" ? Number(escalation(ts).slice(-1)[0].escalation.toFixed(0)) : 0,
       };
     });
-  }, [assets, datasetTimeseries, sort]);
+  }, [assets, datasetTimeseries, sort, assetClass]);
 
   const data_sorted = useMemo(() => {
     if (!data) return null;

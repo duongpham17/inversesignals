@@ -8,8 +8,8 @@ import Indices from '@redux/actions/indices';
 
 export interface PropsTypes {
     loading: boolean,
-    page: number,
-    onPage: (side: 1 | -1) => void,
+    page: string,
+    setPage: (page: string) => void
     timeseries: string,
     setTimeseries: (t: string) => void,
     datasetTimeseries: () => TDatasetTimeseries,
@@ -23,8 +23,8 @@ export interface PropsTypes {
 // for consuming in children components, initial return state
 export const Context = createContext<PropsTypes>({
     loading: false,
-    page: 1,
-    onPage: (side) => {},
+    page: "assets",
+    setPage: (page) => {},
     timeseries: "1h",
     setTimeseries: () => "",
     datasetTimeseries: () => "dataset_1h",
@@ -41,7 +41,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
 
     const [loading, setLoading] = useState(false);
 
-    const [assetClass, setAssetClass] = useState<"crypto" | "stock">("crypto");
+    const [assetClass, setAssetClass] = useState<"crypto" | "stock">("stock");
 
     const {assets} = useAppSelector(state => state.assets);
 
@@ -49,8 +49,17 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
 
     const page = useMemo(() => {
         const param = new URLSearchParams(location.search).get("page");
-        return Number(param) || 1;
+        return param || "assets";
     }, [location.search]);
+
+    const setPage = (page: string) => {
+        const params = new URLSearchParams(location.search);
+        params.set("page", page);
+        navigate({
+            pathname: location.pathname,
+            search: params.toString(),
+        });
+    };
 
     useEffect(() => {
         if(!assets) dispatch(Asset.find());
@@ -60,22 +69,8 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
     }, [dispatch, assets]);
 
     useEffect(() => {
-        if(page === 3 && !indices) dispatch(Indices.find());
+        if(page === "indicies" && !indices) dispatch(Indices.find());
     }, [dispatch, page, indices])
-
-    const onPage = (side: -1 | 1) => {
-        const maxPage = 7;
-        const next = page + side;
-        if (next < 1 || next > maxPage) return;
-
-        const params = new URLSearchParams(location.search);
-        params.set("page", String(next));
-
-        navigate({
-            pathname: location.pathname,
-            search: params.toString(),
-        });
-    };
 
     const timeseries = useMemo(() => {
         const param = new URLSearchParams(location.search).get("timeseries");
@@ -116,7 +111,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
 
     const value = {
         loading,
-        page, onPage,
+        page, setPage,
         timeseries, setTimeseries, datasetTimeseries,
         onCreateIndices, onUpdateIndices, onDeleteIndices,
         assetClass, setAssetClass,

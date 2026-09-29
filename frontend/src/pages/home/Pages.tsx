@@ -10,6 +10,7 @@ import CandlePatterns from './CandlePatterns';
 import Indicies from './Indices';
 import Streaks from './Streaks';
 import Indicators from './Indicators';
+import Momentum from './Momentum'
 
 const HomePage = () => {
   
@@ -19,13 +20,14 @@ const HomePage = () => {
     <Page>
       <Controller />
       <Line color="primary" />
-      {(page === 1 || !page) &&  <Assets/>}
-      {page === 2 && <Indicators/>}
-      {page === 3 && <ArrowsHeatmap/>}
-      {page === 4 && <Grouped/>}
-      {page === 5 && <Streaks/>}
-      {page === 6 && <CandlePatterns/>}
-      {page === 7 && <Indicies/>}
+      {page === "assets" && <Assets/>}
+      {page === "indicators" && <Indicators/>}
+      {page === "arrows" && <ArrowsHeatmap/>}
+      {page === "grouped" && <Grouped/>}
+      {page === "streaks" && <Streaks/>}
+      {page === "candle" && <CandlePatterns/>}
+      {page === "indicies" && <Indicies/>}
+      {page === "momentum" && <Momentum/>}
     </Page>
   )
 }

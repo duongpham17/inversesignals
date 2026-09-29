@@ -1,11 +1,11 @@
 import { composite_volatility, escalation, percentage_from_high, volume, rsi } from '@utils/forumlas';
-import { TBinanceKlines } from 'exchanges/binance';
+import { TBinanceKlines, TBinanceChartKline } from 'exchanges/binance';
 import AreaChart from '@charts/Area';
 import Text from '@components/texts/Style2';
 import Container from '@components/containers/Style3';
 
 interface Props {
-  klines: TBinanceKlines
+  klines: TBinanceChartKline[]
 }
 
 const Indicators = ({klines}: Props) => {

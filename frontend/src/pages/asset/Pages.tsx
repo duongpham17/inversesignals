@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { Context } from './UseContext';
 import { useAppSelector } from '@redux/hooks/useRedux';
+import { formatNumbersToString } from '@utils/functions';
 import Between from '@components/flex/Between';
 import Flex from '@components/flex/Flex';
 import Button from '@components/buttons/Style1';
@@ -17,7 +18,7 @@ const Pages = () => {
 
     const {user} = useAppSelector(state => state.authentications);
 
-    const {price, page, timeseries_set, timeseries, setTimeseries, limits_set, limits, setLimits, viewChart, onViewChart, setOpenItem} = useContext(Context);
+    const {price, supply, exchange, timeseries_set, timeseries, setTimeseries, limits_set, limits, setLimits, viewChart, onViewChart, setOpenItem} = useContext(Context);
 
     return (            
         <>
@@ -27,6 +28,7 @@ const Pages = () => {
         <Between>
             <Flex>
                 <Text size={25} color="primary">{price}</Text>
+                <Text size={12} color="light">{formatNumbersToString(Number(supply) * price)}</Text>
             </Flex>
             <Flex>
                 <Options color="dark" options={timeseries_set.map(el => String(el))} value={String(timeseries)} onClick={time => setTimeseries(time)} />
@@ -36,9 +38,9 @@ const Pages = () => {
             </Flex>
         </Between>
 
-        {page === 1 && <Hyperliquid /> }
+        {exchange === "hyperliquid" && <Hyperliquid /> }
 
-        {page === 2 && <Binance /> }
+        {exchange === "binance" && <Binance /> }
 
         </>
     )
