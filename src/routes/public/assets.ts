@@ -5,6 +5,6 @@ const router: IRouter = express.Router();
 
 router.get('/', find);
 router.get('/select', findSelect);
-router.get('/:name', findName);
+router.get('/name/:name', findName);
 
 export default router;

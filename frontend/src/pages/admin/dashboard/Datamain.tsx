@@ -80,11 +80,11 @@ const Datamain = ({asset}: {asset: IAssets}) => {
                 value={values.name || ""}
                 onChange={onChange}
               />
-              <Input
+              <Options
                 label1="Class"
-                name="class"
+                options={["crypto", "stock"]}
                 value={values.class || ""}
-                onChange={onChange}
+                onClick={(value) => onSetValue({class: value})}
               />
               <Input
                 label1="Timestamp"

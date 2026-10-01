@@ -30,7 +30,7 @@ const findSelect = () => async (dispatch: Dispatch<ACTIONS>) => {
 
 const findName = (name: IAssets["name"]) => async (dispatch: Dispatch<ACTIONS>) => {
     try{
-        const res = await api.get(`${endpoint}/${name}`);
+        const res = await api.get(`${endpoint}/name/${name}`);
         dispatch({
             type: TYPES.ASSETS_FIND_ID,
             payload: res.data.data as IAssets

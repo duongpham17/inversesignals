@@ -1,7 +1,6 @@
 import { useMemo, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Context } from './UseContext';
-import { useAppSelector } from '@redux/hooks/useRedux';
 import { rsi, roi, percentage_from_high, composite_volatility, escalation } from '@utils/forumlas';
 import { formatDate } from '@utils/functions';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
@@ -16,9 +15,7 @@ import Hover from '@components/hover/Style1';
 
 const Pchigh = () => {
 
-  const {assets} = useAppSelector(state => state.assets);
-
-  const {datasetTimeseries, assetClass} = useContext(Context);
+  const {assets, datasetTimeseries, assetClass} = useContext(Context);
 
   const indicators = ["rsi", "roi", "pchigh", "escalation", "cvolatility"] as const;
   type TSortIndicator = typeof indicators[number];
@@ -27,12 +24,12 @@ const Pchigh = () => {
 
   const data = useMemo(() => {
     if (!assets) return null;
-
     return assets.filter(el => el.class === assetClass).map(x => {
       const ts = x[datasetTimeseries()];
       return {
-        latest: ts.slice(-1)[0][1] ,
+        latest: ts.slice(-1)[0][1],
         ticker: x.ticker,
+        name: x.name,
         updatedAt: x.updatedAt,
         rsi: sort.indicator === "rsi" ? Number(rsi(ts).slice(-1)[0].rsi.toFixed(0)) : 0,
         roi: sort.indicator === "roi" ? Number(roi(ts).slice(-1)[0].roi.toFixed(2)) : 0,
@@ -67,12 +64,13 @@ const Pchigh = () => {
         )}
       </Wrap>
 
-      {data_sorted?.map(el => 
+      {data_sorted?.map((el, index) => 
         <Container key={el.ticker}>
           <Between>
             <Flex>
-              <Hover message={formatDate(el.updatedAt)}><Link to={`/asset?symbol=${el.ticker}`}><Text>{el.ticker}</Text></Link></Hover>
-              <Text color="light">${el.latest}</Text>
+              <Text color='light' size={10}>{index+1}.{el.ticker}.</Text>
+              <Hover message={formatDate(el.updatedAt)}><Link to={`/asset?symbol=${el.ticker}`}><Text size={18}>{el.name.toUpperCase()}</Text></Link></Hover>
+              <Text color="light" size={10}>${el.latest}</Text>
             </Flex>
             {sort.indicator === "rsi" &&<TextIndent color={el.rsi > 75 ? "green" : el.rsi < 25 ? "red" : "default"}>{el.rsi}</TextIndent>}
             {sort.indicator === "roi" && <TextIndent color={el.roi > 0 ? "green" : "red"}>{el.roi}</TextIndent>}

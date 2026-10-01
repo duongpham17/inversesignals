@@ -13,11 +13,11 @@ const Controller = () => {
 
     const pages = {
         setting_0: ["indicies"],
-        setting_1: ["assets","indicators","arrows"],
-        setting_2: ["indicators","arrows","grouped","streaks","candle"],
+        setting_1: ["assets","indicators","arrows","momentum", "streaks"],
+        setting_2: ["assets", "indicators","arrows","streaks","candle","momentum"],
     };
     
-    const options = ["assets", "indicators", "arrows", "grouped", "streaks", "candle", "indicies", "momentum"];
+    const options = ["assets", "indicators", "arrows", "streaks", "candle", "indicies", "momentum"];
 
     return (
         <Between>
@@ -36,7 +36,7 @@ const Controller = () => {
                 }
             </Flex>
             <Flex>
-                <Options label1="" options={options} onClick={setPage}/>
+                <Options label1="" value={page} options={options} onClick={setPage}/>
             </Flex>
         </Between>
     )

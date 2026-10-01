@@ -8,5 +8,5 @@ const assets_1 = require("../../controllers/assets");
 const router = express_1.default.Router();
 router.get('/', assets_1.find);
 router.get('/select', assets_1.findSelect);
-router.get('/:name', assets_1.findName);
+router.get('/name/:name', assets_1.findName);
 exports.default = router;

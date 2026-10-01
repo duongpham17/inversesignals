@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Context } from './UseContext';
-import { useAppSelector } from '@redux/hooks/useRedux';
+import { TDatasetTimeseries } from '@redux/types/assets';
 import { Link } from 'react-router-dom';
 import { IAssets } from '@redux/types/assets';
 import { formatNumbersToString } from '@utils/functions';
@@ -13,25 +13,11 @@ import Text from '@components/texts/Style2';
 import Loader from '@components/loaders/Style1';
 import Between from '@components/flex/Between';
 
-const open_price = (asset: IAssets) => {
-  return asset.dataset_1d.slice(-1)[0][3];
-};
-
-const latest_price = (asset: IAssets) => {
-  return asset.dataset_1d.slice(-1)[0][1];
-};
-
-const latest_volume = (asset: IAssets) => {
-  return asset.dataset_1d.slice(-1)[0][2] * latest_price(asset);
-};
-
 const styles = { width1: "130px", width2: "110px" };
 
 const AssetsComponent = () => {
 
-  const {assets} = useAppSelector(state => state.assets);
-
-  const {assetClass} = useContext(Context);
+  const {assets, assetClass} = useContext(Context);
 
   if(!assets) return <Loader/>
 
@@ -40,15 +26,27 @@ const AssetsComponent = () => {
 
       <SearchCrypto assets={assets} />
       
-      {assetClass==="crypto" && <Crypto assets={assets.filter(el => el.class === "crypto")} />}
-
-      {assetClass==="stock" && <Stock assets={assets.filter(el => el.class === "stock")} />}
+      <Assets assets={assets.filter(el => el.class === assetClass)} />
 
     </>
   )
 };
 
-const Crypto = ({assets}: {assets: IAssets[]}) => {
+const Assets = ({assets}: {assets: IAssets[]}) => {
+
+  const {datasetTimeseries} = useContext(Context);
+
+  const latest_price = (asset: IAssets) => {
+    return asset.dataset_1h.slice(-1)[0][1];
+  };
+
+  const open_price = (asset: IAssets, timeseries: TDatasetTimeseries) => {
+    return asset[timeseries].slice(-1)[0][3];
+  };
+
+  const latest_volume = (asset: IAssets, timeseries: TDatasetTimeseries) => {
+    return asset[timeseries].slice(-1)[0][2] * latest_price(asset);
+  };
 
   const mcap = assets.sort((a,b) => (latest_price(b) * b.supply) - (latest_price(a) * a.supply));
 
@@ -60,52 +58,20 @@ const Crypto = ({assets}: {assets: IAssets[]}) => {
         <Text style={{width: styles.width2}}>PRICE</Text>
         <Text style={{width: styles.width2}}>MCAP</Text>
         <Text style={{width: styles.width2}}>ROI</Text>
+        <Text style={{width: styles.width2}}>VOL</Text>
       </Between>
     </Container>
       {mcap.map((el, index) => {
-        const roi = percentage_change(latest_price(el), open_price(el))
+        const roi = percentage_change(latest_price(el), open_price(el, datasetTimeseries()))
         return (
           <Container key={el._id}>
-            <Link to={`/asset?symbol=${el.ticker}&market=crypto&supply=${el.supply}`}>
+            <Link to={`/asset?symbol=${el.ticker}&market=${el.class}&supply=${el.supply}`}>
               <Between key={el._id}>
                 <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
                 <Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text>
                 <Text style={{width: styles.width2}}>$ {formatNumbersToString((latest_price(el) * el.supply))}</Text>
                 <Text color={roi>0?"green":"red"} style={{width: styles.width2}}>{roi.toFixed(2)} %</Text>
-              </Between>
-            </Link>
-          </Container>
-        )
-      })}
-    </>
-  )
-};
-
-const Stock = ({assets}: {assets: IAssets[]}) => {
-  const mcap = assets.sort((a,b) => (latest_price(b) * b.supply) - (latest_price(a) * a.supply));
-
-  return (
-    <>
-      <Container>   
-        <Between>
-          <Text style={{width: styles.width1}}>NAME</Text>
-          <Text style={{width: styles.width2}}>PRICE</Text>
-          <Text style={{width: styles.width2}}>MCAP</Text>
-          <Text style={{width: styles.width2}}>ROI</Text>
-          <Text style={{width: styles.width2}}>VOLUME</Text>
-        </Between>
-      </Container>
-      {mcap.map((el, index) => {
-        const roi = percentage_change(latest_price(el), open_price(el))
-        return (
-          <Container key={el._id}>
-            <Link to={`/asset?id=${el.name}&symbol=${el.ticker}&market=stock&supply=${el.supply}`}>
-              <Between key={el._id}>
-                <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
-                <Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text>
-                <Text style={{width: styles.width2}}>$ {formatNumbersToString((latest_price(el) * el.supply))}</Text>
-                <Text style={{width: styles.width2}} color={roi>0?"green":"red"}>{roi.toFixed(2)} %</Text>
-                <Text style={{width: styles.width2}}>{formatNumbersToString(latest_volume(el))}</Text>
+                <Text style={{width: styles.width2}}>${formatNumbersToString(latest_volume(el, datasetTimeseries()))}</Text>
               </Between>
             </Link>
           </Container>
@@ -120,7 +86,7 @@ const SearchCrypto = ({assets}: {assets:IAssets[]}) => {
   const createLink = (name: string) => {
     const asset = assets.find(el => el.name === name);
     if(!asset) return "";
-    return `/crypto?id=${name}&symbol=${asset.ticker}&market=crypto`
+    return `/asset?id=${name}&symbol=${asset.ticker}&market=crypto&supply=${asset.supply}`
   };
 
   return (
@@ -128,9 +94,7 @@ const SearchCrypto = ({assets}: {assets:IAssets[]}) => {
       <Search data={assets.map(el => el.name.toLowerCase())}>
         {(results) => 
           <Wrap>
-            { results.slice(0, 10).map((el) => 
-              <Link key={el} to={createLink(el)}><Button color="dark">{el}</Button></Link>
-            )}
+            { results.slice(0, 10).map((el) => <Link key={el} to={createLink(el)}><Button color="dark">{el}</Button></Link>) }
           </Wrap>
         }
       </Search>
@@ -138,4 +102,4 @@ const SearchCrypto = ({assets}: {assets:IAssets[]}) => {
   )
 };
 
-export default AssetsComponent
+export default AssetsComponent;

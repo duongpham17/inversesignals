@@ -1,6 +1,5 @@
 import { useMemo, useContext, useState } from 'react';
 import { Context } from './UseContext';
-import { useAppSelector } from '@redux/hooks/useRedux';
 import { IAssets } from '@redux/types/assets';
 import { Link } from 'react-router-dom';
 import Loader from '@components/loaders/Style1';
@@ -16,7 +15,7 @@ interface Props {
 };
 const Streaks = ({assets}: Props) => {
 
-  const {datasetTimeseries, timeseries} = useContext(Context);
+  const {datasetTimeseries, timeseries, assetClass} = useContext(Context);
 
   const [dataset, setDataset] = useState(20);
   const [limit, setLimit] = useState(4);
@@ -26,7 +25,7 @@ const Streaks = ({assets}: Props) => {
   const dataset_set = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
   const data_streak_current = useMemo(() => {
-    return assets.reduce<{name: string, ticker: string, streak: number}[]>((acc, asset) => {
+    return assets.filter(el => el.class === assetClass).reduce<{name: string, ticker: string, streak: number}[]>((acc, asset) => {
       const series = asset[datasetTimeseries()]?.slice(-dataset - 1, -1) || [];
       let streak = 0;
 
@@ -45,7 +44,7 @@ const Streaks = ({assets}: Props) => {
 
       return acc
     }, []).sort((a,b) => a.streak - b.streak);
-  }, [assets, datasetTimeseries, limit, dataset]);
+  }, [assets, datasetTimeseries, limit, dataset, assetClass]);
 
   const data_streak_previous = useMemo(() => {
     return assets.reduce<{ name: string; ticker: string; streak: number }[]>((acc, asset) => {
@@ -119,7 +118,7 @@ const Streaks = ({assets}: Props) => {
 
 const StreaksMain = () => {
 
-  const {assets} = useAppSelector(state => state.assets);
+  const {assets} = useContext(Context);
 
   if(!assets) return <Loader/>
 

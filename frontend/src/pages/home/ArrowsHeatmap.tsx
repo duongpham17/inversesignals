@@ -1,6 +1,5 @@
-import { useMemo, useContext, useState, Fragment } from 'react';
+import { useMemo, useContext, useState } from 'react';
 import { Context } from './UseContext';
-import { useAppSelector } from '@redux/hooks/useRedux';
 import { percentage_change } from '@utils/forumlas';
 import { formatDate, formatNumbersToString } from '@utils/functions';
 import { IoIosArrowRoundUp } from "react-icons/io";
@@ -15,9 +14,7 @@ import Loader from '@components/loaders/Style1';
 
 const ArrowsHeatmap = () => {
 
-    const {datasetTimeseries, assetClass} = useContext(Context);
-
-    const {assets} = useAppSelector(state => state.assets);
+    const {assets, datasetTimeseries, assetClass} = useContext(Context);
 
     const roi_list =  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     const [roi, setRoi] = useState<number>(2);

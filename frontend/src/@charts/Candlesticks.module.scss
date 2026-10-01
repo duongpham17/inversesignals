@@ -1,4 +1,8 @@
 .container{
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+
     p{
         display: inline-flex;
         flex-wrap: wrap;

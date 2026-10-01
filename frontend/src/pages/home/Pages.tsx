@@ -4,7 +4,6 @@ import Page from '@components/pages/Style1';
 import Line from '@components/line/Style1';
 import Controller from './Controller';
 import Assets from './Assets';
-import Grouped from './Grouped';
 import ArrowsHeatmap from './ArrowsHeatmap';
 import CandlePatterns from './CandlePatterns';
 import Indicies from './Indices';
@@ -23,7 +22,6 @@ const HomePage = () => {
       {page === "assets" && <Assets/>}
       {page === "indicators" && <Indicators/>}
       {page === "arrows" && <ArrowsHeatmap/>}
-      {page === "grouped" && <Grouped/>}
       {page === "streaks" && <Streaks/>}
       {page === "candle" && <CandlePatterns/>}
       {page === "indicies" && <Indicies/>}

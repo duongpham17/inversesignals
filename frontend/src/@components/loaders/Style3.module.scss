@@ -1,0 +1,30 @@
+.loader{
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    min-height: 15px;
+    flex-shrink: 0;
+    border: 2px solid var(--primary);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin linear infinite;
+}
+
+.green{
+    border: 2px solid var(--green);
+    border-top: 2px solid transparent;
+}
+
+.red{
+    border: 2px solid var(--red);
+    border-top: 2px solid transparent;
+}
+
+@keyframes spin{
+    from{
+        transform: rotate(0deg);
+    }
+    to{
+        transform: rotate(360deg);
+    }
+}

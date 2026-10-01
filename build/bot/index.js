@@ -24,7 +24,7 @@ const customConsoleLog = (message, color = "green") => {
 };
 const [minutes, delay] = [60_000 * 1, 60_000 * 5];
 const collect = async () => {
-    console.time("COLLECTING");
+    console.time("UPDATED");
     await database();
     const threshold = Date.now() - (minutes + delay);
     const assets = await assets_1.default.find({
@@ -59,7 +59,8 @@ const collect = async () => {
         }
     }));
     const date = new Date().toISOString();
-    console.timeEnd(`${date} Stock:${stock_count} Crypto:${crypto_count} Updated:${crypto_count + stock_count}/${assets.length}`);
+    console.log(`${date} Stock:${stock_count} Crypto:${crypto_count} Updated:${crypto_count + stock_count}/${assets.length}`);
+    console.timeEnd("UPDATED");
 };
 //Run only when this file is executed directly
 if (require.main === module)

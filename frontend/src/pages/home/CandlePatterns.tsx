@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react';
 import { Context } from './UseContext';
-import { useAppSelector } from '@redux/hooks/useRedux';
 import { IAssets } from '@redux/types/assets';
 import { candleInformation, candlePatterns } from '@utils/candles';
 import useOpen from '@hooks/useOpen';
@@ -73,7 +72,7 @@ const Main = ({ assets }: { assets: IAssets[] }) => {
 
 const CandlePatterns = () => {
 
-  const {assets} = useAppSelector(state => state.assets);
+  const { assets } = useContext(Context);
 
   if(!assets) return <Loader />
 

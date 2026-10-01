@@ -1,12 +1,13 @@
 import React, { createContext, useMemo, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@redux/hooks/useRedux';
-import { TDatasetTimeseries } from '@redux/types/assets';
+import { IAssets, TDatasetTimeseries } from '@redux/types/assets';
 import { IIndices } from '@redux/types/indices';
 import Asset from '@redux/actions/assets';
 import Indices from '@redux/actions/indices';
 
 export interface PropsTypes {
+    assets: IAssets[] | null,
     loading: boolean,
     page: string,
     setPage: (page: string) => void
@@ -16,12 +17,13 @@ export interface PropsTypes {
     onCreateIndices: () => Promise<void>,
     onUpdateIndices: (data: IIndices) => Promise<void>,
     onDeleteIndices: (id: string) => Promise<void>,
-    assetClass: "crypto" | "stock",
-    setAssetClass: React.Dispatch<React.SetStateAction<"crypto" | "stock">>,
+    assetClass: string,
+    setAssetClass: (t: "crypto" | "stock") => void,
 };
 
 // for consuming in children components, initial return state
 export const Context = createContext<PropsTypes>({
+    assets: null,
     loading: false,
     page: "assets",
     setPage: (page) => {},
@@ -31,7 +33,7 @@ export const Context = createContext<PropsTypes>({
     onCreateIndices: async () => {},
     onUpdateIndices: async (data: IIndices) => {},
     onDeleteIndices: async (id: string) => {},
-    assetClass: "crypto",
+    assetClass: "stock",
     setAssetClass: () => null,
 });
 
@@ -40,8 +42,6 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
     const [dispatch, location, navigate] = [useAppDispatch(), useLocation(), useNavigate()];
 
     const [loading, setLoading] = useState(false);
-
-    const [assetClass, setAssetClass] = useState<"crypto" | "stock">("stock");
 
     const {assets} = useAppSelector(state => state.assets);
 
@@ -70,7 +70,18 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
 
     useEffect(() => {
         if(page === "indicies" && !indices) dispatch(Indices.find());
-    }, [dispatch, page, indices])
+    }, [dispatch, page, indices]);
+
+    const assetClass = useMemo(() => {
+        const param = new URLSearchParams(location.search).get("assetClass");
+        return param || "stock";
+    }, [location.search]);
+
+    const setAssetClass = (t: "stock" | "crypto") => {
+        const params = new URLSearchParams(location.search);
+        params.set("assetClass", t);
+        navigate(`?${params.toString()}`);
+    };
 
     const timeseries = useMemo(() => {
         const param = new URLSearchParams(location.search).get("timeseries");
@@ -110,11 +121,12 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
     };
 
     const value = {
+        assets,
         loading,
         page, setPage,
         timeseries, setTimeseries, datasetTimeseries,
-        onCreateIndices, onUpdateIndices, onDeleteIndices,
         assetClass, setAssetClass,
+        onCreateIndices, onUpdateIndices, onDeleteIndices,
     };
 
     return (
