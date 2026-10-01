@@ -38,6 +38,7 @@ const collect = async () => {
 
   customConsoleLog(`TOTAL ASSETS: ${assets.length}`);
 
+  let [crypto_count, stock_count] = [0, 0];
   await Promise.all(
     assets.map(async (x) => {
       try {
@@ -55,7 +56,8 @@ const collect = async () => {
           dataset_1w: w1.slice(-100),
           updatedAt: Date.now()
         };
-
+        if(x.class === "crypto") crypto_count++;
+        if(x.class === "stock") stock_count++;
         await Assets.updateOne({ _id: x._id }, update);
       } catch {
         customConsoleLog(`FAILED ${x.name}`, "red");
@@ -63,8 +65,8 @@ const collect = async () => {
     })
   );
 
-  customConsoleLog("ASSET UPDATED COMPLETED");
-  console.timeEnd("COLLECTING");
+  const date = new Date().toISOString();
+  console.timeEnd(`${date} Stock:${stock_count} Crypto:${crypto_count} Updated:${crypto_count+stock_count}/${assets.length}`);
 };
 
 //Run only when this file is executed directly

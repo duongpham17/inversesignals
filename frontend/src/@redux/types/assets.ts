@@ -42,8 +42,6 @@ export enum TYPES {
     ASSETS_FIND        = "ASSETS_FIND",
     ASSETS_FIND_ID     = "ASSETS_FIND_ID",
     ASSETS_FIND_SELECT = "ASSETS_FIND_SELECT",
-    ASSETS_STOCKS_HISTORICAL  = "ASSETS_STOCKS_HISTORICAL",
-    ASSETS_STOCKS_STREAM       = "ASSETS_STOCKS_STREAM"
 };
 
 interface AssetsFind {
@@ -61,15 +59,5 @@ interface AssetsSelect {
     payload: IAssetsSelect[]
 };
 
-interface AssetsStockStream {
-    type: TYPES.ASSETS_STOCKS_STREAM,
-    payload: any
-};
-
-interface AssetsStocksHistorical {
-    type: TYPES.ASSETS_STOCKS_HISTORICAL,
-    payload: any
-}
-
 export type ACTIONS = 
-    AssetsFind | AssetsFindId | AssetsSelect | AssetsStockStream | AssetsStocksHistorical
+    AssetsFind | AssetsFindId | AssetsSelect

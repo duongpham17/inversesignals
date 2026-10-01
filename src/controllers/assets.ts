@@ -1,7 +1,6 @@
 import { NextFunction, Response, Request } from 'express';
 import { appError, asyncBlock } from '../@utils/helper';
 import Assets from '../models/assets';
-import { subscribeToBars, onCandle, getHistoricalBars } from '../alpaca';
 
 export const find = asyncBlock(async(req: Request, res: Response, next: NextFunction) => {
 
@@ -95,57 +94,4 @@ export const findSelect = asyncBlock(async(req: Request, res: Response, next: Ne
         data
     });
   
-});
-
-export const historicalStocks = asyncBlock(async (req: Request, res: Response, next: NextFunction) => {
-
-    const symbol = req.query.symbol as string;
-
-    if (!symbol) {return next(new appError('Stock symbol is required', 400)) }
-
-    const { start, end } = req.query;
-
-    const data = await getHistoricalBars(
-        symbol,
-        start as string | undefined,
-        end as string | undefined
-    );
-
-    return res.status(200).json({
-        status: "success",
-        data
-    });
-});
-
-export const streamStocks = asyncBlock(async (req: Request, res: Response, next: NextFunction) => {
-    const symbol = req.params.id?.toUpperCase();
-
-    if (!symbol) {
-        return next(new appError('Stock symbol is required', 400));
-    }
-
-    // SSE headers
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-
-    res.flushHeaders();
-
-    // Listen for candles FIRST
-    const unsubscribe = onCandle(symbol, (candle) => {
-        console.log('Sending candle to frontend:', candle);
-
-        res.write(`data: ${JSON.stringify(candle)}\n\n`);
-    });
-
-    // Then subscribe to Alpaca
-    subscribeToBars(symbol);
-
-    // Frontend disconnected
-    req.on('close', () => {
-        console.log(`Frontend disconnected from ${symbol}`);
-
-        unsubscribe();
-        res.end();
-    });
 });

@@ -3,10 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.streamStocks = exports.historicalStocks = exports.findSelect = exports.findName = exports.findId = exports.remove = exports.update = exports.create = exports.find = void 0;
+exports.findSelect = exports.findName = exports.findId = exports.remove = exports.update = exports.create = exports.find = void 0;
 const helper_1 = require("../@utils/helper");
 const assets_1 = __importDefault(require("../models/assets"));
-const alpaca_1 = require("../alpaca");
 exports.find = (0, helper_1.asyncBlock)(async (req, res, next) => {
     const data = await assets_1.default.find().sort({ createdAt: 1 }).lean();
     if (!data)
@@ -70,41 +69,5 @@ exports.findSelect = (0, helper_1.asyncBlock)(async (req, res, next) => {
     return res.status(200).json({
         status: "success",
         data
-    });
-});
-exports.historicalStocks = (0, helper_1.asyncBlock)(async (req, res, next) => {
-    const symbol = req.query.symbol;
-    if (!symbol) {
-        return next(new helper_1.appError('Stock symbol is required', 400));
-    }
-    const { start, end } = req.query;
-    const data = await (0, alpaca_1.getHistoricalBars)(symbol, start, end);
-    return res.status(200).json({
-        status: "success",
-        data
-    });
-});
-exports.streamStocks = (0, helper_1.asyncBlock)(async (req, res, next) => {
-    const symbol = req.params.id?.toUpperCase();
-    if (!symbol) {
-        return next(new helper_1.appError('Stock symbol is required', 400));
-    }
-    // SSE headers
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
-    // Listen for candles FIRST
-    const unsubscribe = (0, alpaca_1.onCandle)(symbol, (candle) => {
-        console.log('Sending candle to frontend:', candle);
-        res.write(`data: ${JSON.stringify(candle)}\n\n`);
-    });
-    // Then subscribe to Alpaca
-    (0, alpaca_1.subscribeToBars)(symbol);
-    // Frontend disconnected
-    req.on('close', () => {
-        console.log(`Frontend disconnected from ${symbol}`);
-        unsubscribe();
-        res.end();
     });
 });
