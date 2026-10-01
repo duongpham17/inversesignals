@@ -3,6 +3,8 @@ import { formatPrice } from './functions';
 
 export const clamp = (value: number, max = 500) => Math.max(-max, Math.min(value, max));
 
+export const percentage_difference = (total: number, value: number) => (value / total) * 100
+
 export const percentage_change = (current: number, old: number) => ((current - old) / old) * 100;
 
 export const calculate_market_capital = (price: number, supply: number) => price * supply;

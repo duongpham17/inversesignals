@@ -1,7 +1,7 @@
 import { useContext, useMemo, Fragment, useState } from 'react';
 import { Context } from './UseContext';
 import { IAssets } from '@redux/types/assets';
-import { percentage_change } from '@utils/forumlas';
+import { percentage_change, percentage_difference } from '@utils/forumlas';
 import { formatDate } from '@utils/functions';
 import { Link } from 'react-router-dom';
 import Flex from '@components/flex/Flex';
@@ -49,19 +49,19 @@ const Momentum = () => {
 
   const statistics = useMemo(() => {
     if(!data) return null;
-    const w_l: {[key: string]: number} = {};
+    const profit: {[key: string]: number} = {};
     for(const asset of data){
       for(const x of asset.dataset){
         const timestamp = x.timestamp.toString();
-        w_l[timestamp] = (w_l[timestamp] ?? 0) + (x.pc > 0 ? 1 : 0);
+        profit[timestamp] = x.pc >= 0 ? (profit[timestamp] ?? 0) + 1 : (profit[timestamp] ?? 0);
       }
     }
-    return Object.entries(w_l).map(([timestamp, wl]) => ({timestamp: Number(timestamp), wl}));
+    return Object.entries(profit).map(([timestamp, profit]) => ({timestamp: Number(timestamp), profit}));
   }, [data])
 
-  const width = "90px";
+  const width = "80px";
 
-  const greenOrRed = (pc: number) => pc >= 0 ? "green" : "red"
+  const greenOrRed = (pc: number) => pc >= 0 ? "green" : "red";
 
   const Sticky = () => { 
     return ( !data || !statistics ? <div></div> :
@@ -81,8 +81,9 @@ const Momentum = () => {
             <Text color="light" style={{width}} size={20}>Stats</Text>
           </PlainContainer>
           {[...statistics].slice(0, -1).reverse().map(el =>
-            <PlainContainer style={{width}} key={el.timestamp}>
-              <Hover message="+ / -"><Text style={{width}}>{el.wl} / {data.length}</Text></Hover>
+            <PlainContainer color={el.profit >= (data.length / 2) ? "green" : "red"} style={{width}} key={el.timestamp}>
+              <Hover message={`Profit / Total`}><Text style={{width}}>{el.profit} / {data.length}</Text></Hover>
+              <Text style={{width}}>{percentage_difference(data.length, el.profit).toFixed(0)}%</Text>
             </PlainContainer>
           )}
         </Flex>
