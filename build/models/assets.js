@@ -66,6 +66,10 @@ const AssetsSchema = new mongoose_1.Schema({
     xlabel: {
         type: String,
     },
+    dataset_5m: {
+        type: [[Number]],
+        default: [],
+    },
     dataset_1h: {
         type: [[Number]],
         default: [],
@@ -75,10 +79,6 @@ const AssetsSchema = new mongoose_1.Schema({
         default: [],
     },
     dataset_1d: {
-        type: [[Number]],
-        default: [],
-    },
-    dataset_1w: {
         type: [[Number]],
         default: [],
     },

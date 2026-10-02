@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import { Context } from './UseContext';
 import { TDatasetTimeseries } from '@redux/types/assets';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ import Container from '@components/containers/Style3';
 import Search from '@components/searchbars/Style2';
 import Button from '@components/buttons/Style1';
 import Wrap from '@components/flex/Wrap';
+import Flex from '@components/flex/Flex';
 import Text from '@components/texts/Style2';
 import Loader from '@components/loaders/Style1';
 import Between from '@components/flex/Between';
@@ -51,23 +52,26 @@ const Assets = ({assets}: {assets: IAssets[]}) => {
   const mcap = assets.sort((a,b) => (latest_price(b) * b.supply) - (latest_price(a) * a.supply));
 
   return (
-    <>
-    <Container>   
-      <Between>
-        <Text style={{width: styles.width1}}>NAME</Text>
-        <Text style={{width: styles.width2}}>PRICE</Text>
-        <Text style={{width: styles.width2}}>MCAP</Text>
-        <Text style={{width: styles.width2}}>ROI</Text>
-        <Text style={{width: styles.width2}}>VOL</Text>
-      </Between>
-    </Container>
+    <Fragment>
+      <Container>   
+        <Between>
+          <Text style={{width: styles.width1}}>NAME</Text>
+          <Text style={{width: styles.width2}}>PRICE</Text>
+          <Text style={{width: styles.width2}}>MCAP</Text>
+          <Text style={{width: styles.width2}}>ROI</Text>
+          <Text style={{width: styles.width2}}>VOL</Text>
+        </Between>
+      </Container>
       {mcap.map((el, index) => {
         const roi = percentage_change(latest_price(el), open_price(el, datasetTimeseries()))
         return (
           <Container key={el._id}>
             <Link to={`/asset?symbol=${el.ticker}&market=${el.class}&supply=${el.supply}`}>
               <Between key={el._id}>
-                <Text style={{width: styles.width1}}>{index+1}. {el.name.toUpperCase()}</Text>
+                <Flex style={{width: styles.width1}}>
+                  <Text size={10} color="light">{index+1}</Text>
+                  <Text>{el.name.toUpperCase()}</Text>
+                </Flex>
                 <Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text>
                 <Text style={{width: styles.width2}}>$ {formatNumbersToString((latest_price(el) * el.supply))}</Text>
                 <Text color={roi>0?"green":"red"} style={{width: styles.width2}}>{roi.toFixed(2)} %</Text>
@@ -77,7 +81,7 @@ const Assets = ({assets}: {assets: IAssets[]}) => {
           </Container>
         )
       })}
-    </>
+    </Fragment>
   )
 };
 

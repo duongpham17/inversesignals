@@ -1,13 +1,13 @@
 import styles from './Wrap.module.scss';
 import React from 'react';
 
-interface Props {
+interface Props extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>{
   children: React.ReactNode
 }
 
-const Wrap = ({children}:Props) => {
+const Wrap = ({children, ...props}:Props) => {
   return (
-    <div className={styles.container}>
+    <div className={styles.container} {...props}>
         {children}
     </div>
   )

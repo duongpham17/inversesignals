@@ -34,12 +34,8 @@ const UseContextAdminDashboard = ({children}: {children: React.ReactNode}) => {
         navigate(`?${params.toString()}`);
     };
 
-    const datasetTimeseries = (): TDatasetTimeseries => {
-        if(timeseries === "1h") return "dataset_1h";
-        if(timeseries === "4h") return "dataset_4h";
-        if(timeseries === "1d") return "dataset_1d";
-        if(timeseries === "1w") return "dataset_1w";
-        return "dataset_1d"
+    const datasetTimeseries = () => {
+        return `dataset_${timeseries}` as TDatasetTimeseries
     };
 
     useEffect(() => {

@@ -12,10 +12,10 @@ export interface IAssets {
   supply: number,
   xtype: string;
   xlabel: string;
+  dataset_5m: TAssetDataset;
   dataset_1h: TAssetDataset;
   dataset_4h: TAssetDataset;
   dataset_1d: TAssetDataset;
-  dataset_1w: TAssetDataset;
   updatedAt: number,
   createdAt: number;
 };
@@ -54,6 +54,10 @@ const AssetsSchema = new Schema<IAssetsDocument>({
   xlabel: {
     type: String,
   },
+  dataset_5m: {
+    type: [[Number]],
+    default: [],
+  },
   dataset_1h: {
     type: [[Number]],
     default: [],
@@ -63,10 +67,6 @@ const AssetsSchema = new Schema<IAssetsDocument>({
     default: [],
   },
   dataset_1d: {
-    type: [[Number]],
-    default: [],
-  },
-  dataset_1w: {
     type: [[Number]],
     default: [],
   },

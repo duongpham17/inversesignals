@@ -29,14 +29,14 @@ const custom = async () => {
     await Promise.all(assets.map(async (x) => {
         try {
             const update = {};
-            await assets_1.default.updateOne({ _id: x._id }, update);
+            // await Assets.updateOne({ _id: x._id }, update); //update object with a new key
+            //await Assets.updateOne({_id: x._id}, { $unset: { dataset_1w: 1}}); // delete a key: NOTE KEY must exist in model before running
             customConsoleLog(x.name);
         }
         catch {
             customConsoleLog(`FAILED ${x.name}`, "red");
         }
     }));
-    customConsoleLog("ASSETS UPDATED COMPLETED");
     console.timeEnd("UPDATE");
 };
 //Run only when this file is executed directly

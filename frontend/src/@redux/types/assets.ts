@@ -1,4 +1,6 @@
-export const timeseriesInterval = ["1h", "4h", "1d", "1w"];
+export type TDatasetTimeseries = "dataset_5m" | "dataset_1h" | "dataset_4h" | "dataset_1d";
+
+export const timeseriesInterval = ["5m","1h", "4h", "1d"];
 
 export type TAssetsDataset = number[];
 
@@ -11,15 +13,13 @@ export interface IAssets {
     supply: number,
     xtype: string,
     xlabel: string,
+    dataset_5m: TAssetsDataset[],
     dataset_1h: TAssetsDataset[],
     dataset_4h: TAssetsDataset[],
     dataset_1d: TAssetsDataset[],
-    dataset_1w: TAssetsDataset[],
     updatedAt: number
     createdAt: number,
 };
-
-export type TDatasetTimeseries = "dataset_1h" | "dataset_4h" | "dataset_1d" | "dataset_1w";
 
 export interface IAssetsSelect {
     _id: string,

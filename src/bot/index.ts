@@ -20,7 +20,7 @@ const customConsoleLog = (message: string, color="green") => {
   console.log(Color[color as TColor], message);
 };
 
-const [minutes, delay] = [60_000 * 1, 60_000 * 5];
+const [minutes, delay] = [(60_000 * 1), (60_000 * 5)];
 
 const collect = async () => {
   console.time("UPDATED");
@@ -42,18 +42,19 @@ const collect = async () => {
   await Promise.all(
     assets.map(async (x) => {
       try {
-        const [h1, h4, d1, w1] = await Promise.all([
+        const [m5, h1, h4, d1] = await Promise.all([
+          apis[x.api as TApiKey](x.ticker, "5m"),
           apis[x.api as TApiKey](x.ticker, "1h"),
           apis[x.api as TApiKey](x.ticker, "4h"),
           apis[x.api as TApiKey](x.ticker, "1d"),
-          apis[x.api as TApiKey](x.ticker, "1w"),
+
         ]);
 
         const update = {
+          dataset_5m: m5.slice(-100),
           dataset_1h: h1.slice(-100),
           dataset_4h: h4.slice(-100),
           dataset_1d: d1.slice(-100),
-          dataset_1w: w1.slice(-100),
           updatedAt: Date.now()
         };
         if(x.class === "crypto") crypto_count++;

@@ -22,7 +22,7 @@ const customConsoleLog = (message, color = "green") => {
     console.log("-------------------------------------------------------");
     console.log(Color[color], message);
 };
-const [minutes, delay] = [60_000 * 1, 60_000 * 5];
+const [minutes, delay] = [(60_000 * 1), (60_000 * 5)];
 const collect = async () => {
     console.time("UPDATED");
     await database();
@@ -35,17 +35,17 @@ const collect = async () => {
     let [crypto_count, stock_count] = [0, 0];
     await Promise.all(assets.map(async (x) => {
         try {
-            const [h1, h4, d1, w1] = await Promise.all([
+            const [m5, h1, h4, d1] = await Promise.all([
+                apis_1.apis[x.api](x.ticker, "5m"),
                 apis_1.apis[x.api](x.ticker, "1h"),
                 apis_1.apis[x.api](x.ticker, "4h"),
                 apis_1.apis[x.api](x.ticker, "1d"),
-                apis_1.apis[x.api](x.ticker, "1w"),
             ]);
             const update = {
+                dataset_5m: m5.slice(-100),
                 dataset_1h: h1.slice(-100),
                 dataset_4h: h4.slice(-100),
                 dataset_1d: d1.slice(-100),
-                dataset_1w: w1.slice(-100),
                 updatedAt: Date.now()
             };
             if (x.class === "crypto")

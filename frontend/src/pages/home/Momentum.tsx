@@ -1,11 +1,11 @@
-import { useContext, useMemo, Fragment, useState } from 'react';
+import { useContext, useMemo, Fragment, useState, useEffect } from 'react';
 import { Context } from './UseContext';
 import { IAssets } from '@redux/types/assets';
 import { percentage_change, percentage_difference } from '@utils/forumlas';
-import { formatDate } from '@utils/functions';
+import { formatDate, formatNumbersToString } from '@utils/functions';
 import { Link } from 'react-router-dom';
 import Flex from '@components/flex/Flex';
-import Container from '@components/containers/Style1';
+import Container from '@components/containers/Style2';
 import PlainContainer from '@components/containers/Style2';
 import Text from '@components/texts/Style1';
 import Loader from '@components/loaders/Style1';
@@ -25,18 +25,20 @@ const Momentum = () => {
   const data = useMemo(() => {
     if(!assets) return null;
     const dataset_filtered_asset_class = assets.filter(el => el.class === assetClass);
-    const dataset: (IAssets & {dataset: {timestamp: number, pc: number}[]})[] = [];
+    const dataset: (IAssets & {dataset: {timestamp: number, pc: number, price: number}[]})[] = [];
     const datasetTime = datasetTimeseries();
     for(const _asset of dataset_filtered_asset_class){
       dataset.push({..._asset, dataset: []});
       const latest_price = _asset[datasetTime][_asset[datasetTime].length - 1][1];
       const oldest_price = _asset[datasetTime][0][1];
       for(let i = 1; i < _asset[datasetTime].length; i++){
+        if(i === _asset[datasetTime].length - 1) continue;
         const timeseries_dataset = _asset[datasetTime][i];
+        const current_price = timeseries_dataset[1]
         let pc = 0;
-        if(options==="latest") pc = percentage_change(latest_price, timeseries_dataset[1]);
-        if(options==="accumulate") pc = percentage_change(timeseries_dataset[1], oldest_price);
-        dataset[dataset.length - 1].dataset.push({ timestamp: timeseries_dataset[0], pc });
+        if(options==="latest") pc = percentage_change(latest_price, current_price);
+        if(options==="accumulate") pc = percentage_change(current_price, oldest_price);
+        dataset[dataset.length - 1].dataset.push({ timestamp: timeseries_dataset[0], pc, price: current_price });
       };
     };
     dataset.sort((a, b) => {
@@ -44,7 +46,7 @@ const Momentum = () => {
       const bMarketCap = b.supply * b[datasetTime].slice(-1)[0][1];
       return bMarketCap - aMarketCap;
     });
-    return dataset;
+    return dataset
   }, [assets, assetClass, datasetTimeseries, options]);
 
   const statistics = useMemo(() => {
@@ -57,39 +59,56 @@ const Momentum = () => {
       }
     }
     return Object.entries(profit).map(([timestamp, profit]) => ({timestamp: Number(timestamp), profit}));
-  }, [data])
+  }, [data]);
 
-  const width = "80px";
+  useEffect(() => {
+    if(!statistics || !data) return;
+    const total = data.length;
+    const latest = statistics.slice(-1)[0].profit;
+    const pd = percentage_difference(total, latest).toFixed(0);
+    document.title = `${assetClass.toUpperCase()} ${pd}% [ ${latest} / ${total} ]`
+  }, [statistics, data, assetClass])
+
+  const width1 = "140px";
+  const width2 = "90px";
 
   const greenOrRed = (pc: number) => pc >= 0 ? "green" : "red";
+
+  const marketcap = (asset: IAssets) => {
+    return formatNumbersToString(asset.supply * asset.dataset_1h[0][1]);
+  };
+
+  const latest_price = (asset: IAssets) => {
+    return asset[datasetTimeseries()].slice(-1)[0][1];
+  };
 
   const Sticky = () => { 
     return ( !data || !statistics ? <div></div> :
       <div>
         <Flex>
-          <PlainContainer style={{width}}>
-            <Text color="light" style={{width}} size={20}>Date</Text>
+          <PlainContainer style={{width: width1}}>
+            <Text color="light" style={{width: width1}} size={20}>Date</Text>
           </PlainContainer>
-          {[...data[0].dataset].slice(0, -1).reverse().map(el =>
-            <PlainContainer style={{width}} key={el.timestamp}>
-              <Text style={{width}}>{formatDate(el.timestamp)}</Text>
+          {[...data[0].dataset].reverse().map(el =>
+            <PlainContainer style={{width: width2}} key={el.timestamp}>
+              <Text style={{width: width2}}>{formatDate(el.timestamp)}</Text>
             </PlainContainer>
           )}
         </Flex>
         <Flex>
-          <PlainContainer style={{width}}>
-            <Text color="light" style={{width}} size={20}>Stats</Text>
+          <PlainContainer style={{width: width1}}>
+            <Text color="light" style={{width: width1}} size={20}>Stats</Text>
           </PlainContainer>
-          {[...statistics].slice(0, -1).reverse().map(el =>
-            <PlainContainer color={el.profit >= (data.length / 2) ? "green" : "red"} style={{width}} key={el.timestamp}>
-              <Hover message={`Profit / Total`}><Text style={{width}}>{el.profit} / {data.length}</Text></Hover>
-              <Text style={{width}}>{percentage_difference(data.length, el.profit).toFixed(0)}%</Text>
+          {[...statistics].reverse().map(el =>
+            <PlainContainer color={el.profit >= (data.length / 2) ? "green" : "red"} style={{width: width2}} key={el.timestamp}>
+              <Hover message={`Profit / Total`}><Text style={{width: width2}}>{el.profit} / {data.length}</Text></Hover>
+              <Text style={{width: width2}}>{percentage_difference(data.length, el.profit).toFixed(0)}%</Text>
             </PlainContainer>
           )}
         </Flex>
       </div>
     )
-  }
+  };
 
   return ( !data ? <Loader /> :
     <Fragment>
@@ -103,15 +122,22 @@ const Momentum = () => {
         <Fragment>
           {data.map((asset, index) => 
             <Flex key={asset._id}>
-              <Container style={{width}}>
-                <Link to={`asset?symbol=${asset.ticker}&market=${asset.class}&supply=${asset.supply}`}>
-                  <Text style={{width}}>{index+1}.{asset.ticker.toUpperCase()}</Text>
+              <Container style={{width: width1}}>
+                <Hover message={`$${marketcap(asset)}`}>
+                  <Link to={`asset?symbol=${asset.ticker}&market=${asset.class}&supply=${asset.supply}`}>
+                  <Flex>
+                    <Text size={12} color="light">{index+1}.</Text>
+                    {assetClass === "stock" && <Text style={{width: width2}}>{asset.ticker.slice(0, -1).toUpperCase()}</Text>}
+                    {assetClass === "crypto" && <Text style={{width: width2}}>{asset.ticker.toUpperCase()}</Text>}
+                    <Text size={12}>${latest_price(asset)}</Text>
+                  </Flex>
                 </Link>
+                </Hover>
               </Container>
               <Flex>
-                {[...asset.dataset].slice(0, -1).reverse().map(el => 
-                  <Container color={greenOrRed(el.pc)} style={{width}} key={el.timestamp}> 
-                      <Text style={{width}} color={greenOrRed(el.pc)} >{el.pc.toFixed(2)}</Text>
+                {[...asset.dataset].reverse().map(el => 
+                  <Container color={greenOrRed(el.pc)} style={{width: width2}} key={el.timestamp}> 
+                      <Hover message={`${asset.name.toUpperCase()} - $${el.price} - ${formatDate(el.timestamp)}`}><Text style={{width: width2}} color={greenOrRed(el.pc)} >{el.pc.toFixed(2)}</Text></Hover>
                   </Container>
                 )}
               </Flex>
