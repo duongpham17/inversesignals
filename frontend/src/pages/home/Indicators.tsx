@@ -1,4 +1,4 @@
-import { useMemo, useContext, useState } from 'react';
+import { useMemo, useContext, useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Context } from './UseContext';
 import { rsi, roi, percentage_from_high, composite_volatility, escalation } from '@utils/forumlas';
@@ -15,7 +15,7 @@ import Hover from '@components/hover/Style1';
 
 const Pchigh = () => {
 
-  const {assets, datasetTimeseries, assetClass} = useContext(Context);
+  const {assets, datasetTimeseries, assetClass, customLinkUrl} = useContext(Context);
 
   const indicators = ["rsi", "roi", "pchigh", "escalation", "cvolatility"] as const;
   type TSortIndicator = typeof indicators[number];
@@ -27,10 +27,12 @@ const Pchigh = () => {
     return assets.filter(el => el.class === assetClass).map(x => {
       const ts = x[datasetTimeseries()];
       return {
-        latest: ts.slice(-1)[0][1],
         ticker: x.ticker,
         name: x.name,
+        supply: x.supply,
+        class: x.class,
         updatedAt: x.updatedAt,
+        latest: ts.slice(-1)[0][1],
         rsi: sort.indicator === "rsi" ? Number(rsi(ts).slice(-1)[0].rsi.toFixed(0)) : 0,
         roi: sort.indicator === "roi" ? Number(roi(ts).slice(-1)[0].roi.toFixed(2)) : 0,
         pchigh: sort.indicator === "pchigh" ? Number(percentage_from_high(ts).slice(-1)[0].pchigh.toFixed(0)) : 0,
@@ -52,8 +54,10 @@ const Pchigh = () => {
     }));
   };
 
+  console.log(data_sorted)
+
   return (
-    <>
+    <Fragment>
 
       <Wrap>
         {indicators.map(el => 
@@ -69,7 +73,7 @@ const Pchigh = () => {
           <Between>
             <Flex>
               <Text color='light' size={10}>{index+1}.{el.ticker}.</Text>
-              <Hover message={formatDate(el.updatedAt)}><Link to={`/asset?symbol=${el.ticker}`}><Text size={18}>{el.name.toUpperCase()}</Text></Link></Hover>
+              <Hover message={formatDate(el.updatedAt)}><Link to={customLinkUrl(el as any)}><Text size={18}>{el.name.toUpperCase()}</Text></Link></Hover>
               <Text color="light" size={10}>${el.latest}</Text>
             </Flex>
             {sort.indicator === "rsi" &&<TextIndent color={el.rsi > 75 ? "green" : el.rsi < 25 ? "red" : "default"}>{el.rsi}</TextIndent>}
@@ -81,7 +85,7 @@ const Pchigh = () => {
       </Container>
       )}
 
-    </>
+    </Fragment>
   )
 }
 

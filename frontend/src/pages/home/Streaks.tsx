@@ -15,7 +15,7 @@ interface Props {
 };
 const Streaks = ({assets}: Props) => {
 
-  const {datasetTimeseries, timeseries, assetClass} = useContext(Context);
+  const {datasetTimeseries, timeseries, assetClass, customLinkUrl} = useContext(Context);
 
   const [dataset, setDataset] = useState(20);
   const [limit, setLimit] = useState(4);
@@ -25,7 +25,7 @@ const Streaks = ({assets}: Props) => {
   const dataset_set = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
   const data_streak_current = useMemo(() => {
-    return assets.filter(el => el.class === assetClass).reduce<{name: string, ticker: string, streak: number}[]>((acc, asset) => {
+    return assets.filter(el => el.class === assetClass).reduce<{name: string, ticker: string, supply: number, streak: number}[]>((acc, asset) => {
       const series = asset[datasetTimeseries()]?.slice(-dataset - 1, -1) || [];
       let streak = 0;
 
@@ -40,14 +40,19 @@ const Streaks = ({assets}: Props) => {
         }
       }
 
-      if (streak >= limit || streak <= -limit) acc.push({name: asset.name, ticker: asset.ticker, streak});
+      if (streak >= limit || streak <= -limit) acc.push({
+        name: asset.name, 
+        ticker: asset.ticker, 
+        supply: asset.supply,
+        streak
+      });
 
       return acc
     }, []).sort((a,b) => a.streak - b.streak);
   }, [assets, datasetTimeseries, limit, dataset, assetClass]);
 
   const data_streak_previous = useMemo(() => {
-    return assets.reduce<{ name: string; ticker: string; streak: number }[]>((acc, asset) => {
+    return assets.reduce<{ name: string; ticker: string; supply: number, streak: number }[]>((acc, asset) => {
       const series = asset[datasetTimeseries()]?.slice(-dataset - 1, -1) || [];
       let streak = 0;
       const completedStreaks: number[] = [];
@@ -77,7 +82,7 @@ const Streaks = ({assets}: Props) => {
 
       // Add completed streaks to accumulator
       for (const s of completedStreaks) {
-        acc.push({ name: asset.name, ticker: asset.ticker, streak: s });
+        acc.push({ name: asset.name, ticker: asset.ticker, supply: asset.supply, streak: s });
       }
 
       return acc;
@@ -101,11 +106,8 @@ const Streaks = ({assets}: Props) => {
       </Wrap> 
 
       {streakDataToRender.map((el, index) => (
-        <Container
-          key={el.name + el.streak + index} // safe unique key
-          color={el.streak > 0 ? "green" : "red"}
-        >
-          <Link to={`/asset?symbol=${el.ticker}&timeseries=${timeseries}`}>
+        <Container key={el.name + el.streak + index} color={el.streak > 0 ? "green" : "red"}>
+          <Link to={`${customLinkUrl(el as any)}&timeseries=${timeseries}`}>
             <Text color={el.streak > 0 ? "green" : "red"} size={20}>
               {el.streak} {el.name.toUpperCase()}
             </Text>

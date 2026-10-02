@@ -2,6 +2,7 @@ import React, { createContext, useMemo, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export interface PropsTypes {
+    name: string | null,
     symbol: string | null,
     supply: string | null,
     market: string | null,
@@ -23,6 +24,7 @@ export interface PropsTypes {
 
 // for consuming in children components, initial return state
 export const Context = createContext<PropsTypes>({
+    name:  "",
     symbol: "",
     supply: "",
     exchange: "",
@@ -46,7 +48,7 @@ const UseContextCrypto = ({children}: {children: React.ReactNode}) => {
 
     const [ location, navigate ] = [ useLocation(), useNavigate() ];
     const query = new URLSearchParams(location.search)
-    const [ symbol, supply, market ] = [query.get("symbol"), query.get("supply"), query.get("market")];
+    const [ name, symbol, supply, market ] = [query.get("name"), query.get("symbol"), query.get("supply"), query.get("market")];
     const [ price, setPrice ] = useState<number>(0);
     const [ viewChart, setViewChart ] = useState<string>("candle");
     const [ openItem, setOpenItem ] = useState<string>("");
@@ -92,8 +94,8 @@ const UseContextCrypto = ({children}: {children: React.ReactNode}) => {
     };
 
     useEffect(() => {
-        document.title = `${symbol} ${price.toString()}`;
-    }, [price, symbol])
+        document.title = `${market==="stock"?symbol?.slice(0, -1):symbol} ${price.toString()}`;
+    }, [price, symbol, market])
 
     const chartViews = ["candle", "line"];
     const onViewChart = () => {
@@ -102,7 +104,7 @@ const UseContextCrypto = ({children}: {children: React.ReactNode}) => {
     };
 
     const value = {
-        symbol, supply, market,
+        name, symbol, supply, market,
         price, setPrice,
         timeseries_set, timeseries, setTimeseries,
         limits_set, limits, setLimits, 

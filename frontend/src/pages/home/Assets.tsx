@@ -35,10 +35,10 @@ const AssetsComponent = () => {
 
 const Assets = ({assets}: {assets: IAssets[]}) => {
 
-  const {datasetTimeseries} = useContext(Context);
+  const {datasetTimeseries, customLinkUrl} = useContext(Context);
 
   const latest_price = (asset: IAssets) => {
-    return asset.dataset_1h.slice(-1)[0][1];
+    return asset[datasetTimeseries()].slice(-1)[0][1];
   };
 
   const open_price = (asset: IAssets, timeseries: TDatasetTimeseries) => {
@@ -47,6 +47,10 @@ const Assets = ({assets}: {assets: IAssets[]}) => {
 
   const latest_volume = (asset: IAssets, timeseries: TDatasetTimeseries) => {
     return asset[timeseries].slice(-1)[0][2] * latest_price(asset);
+  };
+
+  const roi = (asset: IAssets) => {
+    return percentage_change(latest_price(asset), open_price(asset, datasetTimeseries()))
   };
 
   const mcap = assets.sort((a,b) => (latest_price(b) * b.supply) - (latest_price(a) * a.supply));
@@ -63,10 +67,9 @@ const Assets = ({assets}: {assets: IAssets[]}) => {
         </Between>
       </Container>
       {mcap.map((el, index) => {
-        const roi = percentage_change(latest_price(el), open_price(el, datasetTimeseries()))
         return (
           <Container key={el._id}>
-            <Link to={`/asset?symbol=${el.ticker}&market=${el.class}&supply=${el.supply}`}>
+            <Link to={customLinkUrl(el)}>
               <Between key={el._id}>
                 <Flex style={{width: styles.width1}}>
                   <Text size={10} color="light">{index+1}</Text>
@@ -74,7 +77,7 @@ const Assets = ({assets}: {assets: IAssets[]}) => {
                 </Flex>
                 <Text style={{width: styles.width2}}>$ {(latest_price(el))}</Text>
                 <Text style={{width: styles.width2}}>$ {formatNumbersToString((latest_price(el) * el.supply))}</Text>
-                <Text color={roi>0?"green":"red"} style={{width: styles.width2}}>{roi.toFixed(2)} %</Text>
+                <Text color={roi(el)>0?"green":"red"} style={{width: styles.width2}}>{roi(el).toFixed(2)} %</Text>
                 <Text style={{width: styles.width2}}>${formatNumbersToString(latest_volume(el, datasetTimeseries()))}</Text>
               </Between>
             </Link>
@@ -87,10 +90,12 @@ const Assets = ({assets}: {assets: IAssets[]}) => {
 
 const SearchCrypto = ({assets}: {assets:IAssets[]}) => {
 
+  const {customLinkUrl} = useContext(Context);
+
   const createLink = (name: string) => {
     const asset = assets.find(el => el.name === name);
     if(!asset) return "";
-    return `/asset?id=${name}&symbol=${asset.ticker}&market=crypto&supply=${asset.supply}`
+    return customLinkUrl(asset)
   };
 
   return (

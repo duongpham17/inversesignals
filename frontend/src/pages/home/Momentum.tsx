@@ -46,7 +46,7 @@ const Momentum = () => {
       const bMarketCap = b.supply * b[datasetTime].slice(-1)[0][1];
       return bMarketCap - aMarketCap;
     });
-    return dataset
+    return dataset;
   }, [assets, assetClass, datasetTimeseries, options]);
 
   const statistics = useMemo(() => {
@@ -57,9 +57,10 @@ const Momentum = () => {
         const timestamp = x.timestamp.toString();
         profit[timestamp] = x.pc >= 0 ? (profit[timestamp] ?? 0) + 1 : (profit[timestamp] ?? 0);
       }
-    }
+    };
     return Object.entries(profit).map(([timestamp, profit]) => ({timestamp: Number(timestamp), profit}));
   }, [data]);
+  
 
   useEffect(() => {
     if(!statistics || !data) return;
@@ -70,7 +71,7 @@ const Momentum = () => {
   }, [statistics, data, assetClass])
 
   const width1 = "140px";
-  const width2 = "90px";
+  const width2 = "95px";
 
   const greenOrRed = (pc: number) => pc >= 0 ? "green" : "red";
 
@@ -85,6 +86,7 @@ const Momentum = () => {
   const Sticky = () => { 
     return ( !data || !statistics ? <div></div> :
       <div>
+        {/* DATE */}
         <Flex>
           <PlainContainer style={{width: width1}}>
             <Text color="light" style={{width: width1}} size={20}>Date</Text>
@@ -95,14 +97,14 @@ const Momentum = () => {
             </PlainContainer>
           )}
         </Flex>
+        {/* STATS */}
         <Flex>
           <PlainContainer style={{width: width1}}>
             <Text color="light" style={{width: width1}} size={20}>Stats</Text>
           </PlainContainer>
-          {[...statistics].reverse().map(el =>
+          {[...statistics].reverse().map((el) =>
             <PlainContainer color={el.profit >= (data.length / 2) ? "green" : "red"} style={{width: width2}} key={el.timestamp}>
-              <Hover message={`Profit / Total`}><Text style={{width: width2}}>{el.profit} / {data.length}</Text></Hover>
-              <Text style={{width: width2}}>{percentage_difference(data.length, el.profit).toFixed(0)}%</Text>
+              <Hover message={`Profit / Total`}><Text style={{width: width2}}>{percentage_difference(data.length, el.profit).toFixed(0)}% {el.profit} / {data.length}</Text></Hover>
             </PlainContainer>
           )}
         </Flex>
@@ -135,9 +137,9 @@ const Momentum = () => {
                 </Hover>
               </Container>
               <Flex>
-                {[...asset.dataset].reverse().map(el => 
+                {[...asset.dataset].reverse().map((el,index) => 
                   <Container color={greenOrRed(el.pc)} style={{width: width2}} key={el.timestamp}> 
-                      <Hover message={`${asset.name.toUpperCase()} - $${el.price} - ${formatDate(el.timestamp)}`}><Text style={{width: width2}} color={greenOrRed(el.pc)} >{el.pc.toFixed(2)}</Text></Hover>
+                      <Hover message={`${index}. ${asset.name.toUpperCase()} - $${el.price} - ${formatDate(el.timestamp)}`}><Text style={{width: width2}} color={greenOrRed(el.pc)} >{el.pc.toFixed(2)}</Text></Hover>
                   </Container>
                 )}
               </Flex>

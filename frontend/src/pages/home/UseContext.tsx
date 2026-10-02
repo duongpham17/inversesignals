@@ -19,6 +19,7 @@ export interface PropsTypes {
     onDeleteIndices: (id: string) => Promise<void>,
     assetClass: string,
     setAssetClass: (t: "crypto" | "stock") => void,
+    customLinkUrl: (asset: IAssets) => string,
 };
 
 // for consuming in children components, initial return state
@@ -35,6 +36,7 @@ export const Context = createContext<PropsTypes>({
     onDeleteIndices: async (id: string) => {},
     assetClass: "stock",
     setAssetClass: () => null,
+    customLinkUrl: (asset: IAssets) => "",
 });
 
 const UseContextHome = ({children}: {children: React.ReactNode}) => {
@@ -98,6 +100,10 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
         return `dataset_${timeseries}` as TDatasetTimeseries
     };
 
+    const customLinkUrl = (asset: IAssets) => {
+        return `/asset?symbol=${asset.ticker}&name=${asset.name}&supply=${asset.supply}&market=${asset.class}`
+    };
+
     const onCreateIndices = async () => {
         setLoading(true);
         await dispatch(Indices.create({name: "NEW"}));
@@ -122,6 +128,7 @@ const UseContextHome = ({children}: {children: React.ReactNode}) => {
         page, setPage,
         timeseries, setTimeseries, datasetTimeseries,
         assetClass, setAssetClass,
+        customLinkUrl,
         onCreateIndices, onUpdateIndices, onDeleteIndices,
     };
 
